@@ -1,0 +1,1 @@
+ALTER TABLE refresh_token ADD COLUMN ip_address TEXT;

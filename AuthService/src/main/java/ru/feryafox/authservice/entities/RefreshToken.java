@@ -21,6 +21,9 @@ public class RefreshToken {
     @Column(name = "token", nullable = false, unique = true)
     private String token;
 
+    @Column(name = "ip_address")
+    private String ipAddress;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

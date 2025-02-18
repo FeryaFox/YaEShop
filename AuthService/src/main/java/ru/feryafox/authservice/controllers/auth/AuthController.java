@@ -4,7 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.feryafox.authservice.models.requests.LoginRequest;
 import ru.feryafox.authservice.models.requests.RegisterRequest;
+import ru.feryafox.authservice.models.responses.AuthResponse;
 import ru.feryafox.authservice.services.UserService;
 
 @RestController
@@ -26,6 +28,15 @@ public class AuthController {
             @RequestBody RegisterRequest registerRequest
     ) {
         userService.register(registerRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestBody LoginRequest loginRequest,
+            HttpServletRequest request
+    ) {
+        AuthResponse authResponse = userService.login(loginRequest, request);
+        return ResponseEntity.ok().body(authResponse);
     }
 }
