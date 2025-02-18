@@ -1,0 +1,20 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Уровень логирования по умолчанию -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- Логирование Spring Cloud Gateway -->
+    <logger name="org.springframework.cloud.gateway" level="DEBUG"/>
+    <logger name="reactor.netty.http.client" level="DEBUG"/>
+    <logger name="reactor.netty.http.server" level="DEBUG"/>
+
+    <!-- Логирование для вашего RouteLoggingFilter -->
+    <logger name="ru.feryafox.gatewayservice.filter.RouteLoggingFilter" level="DEBUG"/>
+</configuration>

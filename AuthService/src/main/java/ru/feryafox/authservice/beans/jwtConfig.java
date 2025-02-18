@@ -1,4 +1,4 @@
-package ru.feryafox.authservice.configs;
+package ru.feryafox.authservice.beans;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/ping")
+@RequestMapping("/auth/ping")
 public class Ping {
     @GetMapping("")
     public ResponseEntity<?> ping() {
-        return new ResponseEntity<>("pong",HttpStatus.OK);
+        return new ResponseEntity<>("pong", HttpStatus.OK);
     }
 }
