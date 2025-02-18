@@ -1,11 +1,11 @@
 package ru.feryafox.jwt;
 
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
 import java.util.*;
+
 
 public class JwtUtils {
     private final String jwtSecret;
@@ -22,62 +22,66 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(String username) {
+    /**
+     * Генерация JWT-токена с UUID пользователя
+     */
+    public String generateToken(UUID userId) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userId.toString()) // Храним UUID в subject
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String generateRefreshToken(String username, Set<String> userAgents) {
-//        List<String> userAgents = List.of(userAgent);
-
+    /**
+     * Генерация Refresh-токена с UUID и списком user-agents
+     */
+    public String generateRefreshToken(UUID userId) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .claim("userAgents", userAgents)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser()
+    /**
+     * Извлекаем UUID пользователя из токена
+     */
+    public UUID getUserIdFromToken(String token) {
+        String userIdStr = Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+
+        return UUID.fromString(userIdStr);
     }
 
-    public Set<String> getUserAgentsFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
 
-        return Set.copyOf((List<String>) claims.get("userAgents"));
-    }
-
-    public String getUsernameFromExpiredToken(String token) {
+    /**
+     * Получаем UUID пользователя из истекшего токена
+     */
+    public UUID getUserIdFromExpiredToken(String token) {
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            return claims.getSubject();
+            return UUID.fromString(claims.getSubject());
         } catch (ExpiredJwtException e) {
-            return e.getClaims().getSubject();
+            return UUID.fromString(e.getClaims().getSubject());
         } catch (JwtException e) {
             throw e;
         }
     }
 
-
+    /**
+     * Валидация токена
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -86,20 +90,19 @@ public class JwtUtils {
                     .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-//            log.debug("Token has expired: {}", e.getMessage());
             throw e;
         } catch (MalformedJwtException e) {
-//            log.debug("Invalid JWT token: {}", e.getMessage());
             throw e;
         } catch (UnsupportedJwtException e) {
-//            log.debug("Unsupported JWT token: {}", e.getMessage());
             throw e;
         } catch (IllegalArgumentException e) {
-//            log.debug("JWT claims string is empty: {}", e.getMessage());
             throw e;
         }
     }
 
+    /**
+     * Получаем токен из заголовка Authorization
+     */
     public String getTokenFromHeader(String authHeader) {
         return authHeader.substring(7);
     }
