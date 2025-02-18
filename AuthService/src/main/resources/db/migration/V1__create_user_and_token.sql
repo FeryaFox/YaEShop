@@ -1,9 +1,3 @@
-CREATE TABLE refresh_token (
-                               id SERIAL PRIMARY KEY,
-                               token TEXT NOT NULL,
-                               user_id uuid UNIQUE
-);
-
 CREATE TABLE users (
                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                        phone_number VARCHAR(255) UNIQUE NOT NULL,
@@ -18,6 +12,15 @@ CREATE TABLE users (
                        is_account_non_locked BOOLEAN DEFAULT TRUE,
                        is_credentials_non_expired BOOLEAN DEFAULT TRUE
 );
+
+CREATE TABLE refresh_token (
+                               id SERIAL PRIMARY KEY,
+                               token TEXT NOT NULL UNIQUE,
+                               user_id UUID NOT NULL,
+                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                               FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE roles (
                        id SERIAL PRIMARY KEY,
@@ -48,3 +51,9 @@ CREATE TABLE sellers (
 
 ALTER TABLE refresh_token
     ADD CONSTRAINT fk_refresh_token_user FOREIGN KEY (user_id) REFERENCES users (id);
+
+INSERT INTO roles (name) VALUES
+                             ('BUYER'),
+                             ('SELLER'),
+                             ('ADMIN'),
+                             ('DISTRIBUTION_POINT_EMPLOYEE');

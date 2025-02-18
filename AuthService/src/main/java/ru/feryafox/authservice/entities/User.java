@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,8 +41,8 @@ public class User implements UserDetails {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt = new Date();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private RefreshToken refreshToken;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     @Column(name = "is_enabled", nullable = false)
     private boolean isEnabled = true;
@@ -62,7 +63,6 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
