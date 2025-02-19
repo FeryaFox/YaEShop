@@ -1,0 +1,1 @@
+ALTER TABLE refresh_token ADD COLUMN expired_at timestamp not null default current_timestamp;

@@ -2,6 +2,7 @@ package ru.feryafox.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import ru.feryafox.jwt.records.RefreshToken;
 
 import java.security.Key;
 import java.util.*;
@@ -37,13 +38,16 @@ public class JwtUtils {
     /**
      * Генерация Refresh-токена с UUID и списком user-agents
      */
-    public String generateRefreshToken(UUID userId) {
-        return Jwts.builder()
+    public RefreshToken generateRefreshToken(UUID userId) {
+        Date expiredAt = new Date(System.currentTimeMillis() + refreshTokenExpirationMs);
+        String refreshToken = Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))
+                .setExpiration(expiredAt)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
+
+        return new RefreshToken(refreshToken, expiredAt);
     }
 
     /**

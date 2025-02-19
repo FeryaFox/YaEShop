@@ -31,4 +31,8 @@ public class RefreshToken {
     @Column(name = "created_at", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
+
+    @Column(name = "expired_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expiredAt;
 }

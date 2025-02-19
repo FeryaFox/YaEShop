@@ -1,9 +1,7 @@
 package ru.feryafox.authservice.services;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.Authenticator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,11 +23,9 @@ import ru.feryafox.authservice.repositories.UserRepository;
 import ru.feryafox.authservice.utils.IpAddressUtils;
 import ru.feryafox.jwt.JwtUtils;
 
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class AuthService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -76,18 +72,21 @@ public class UserService {
             e.printStackTrace();
             throw e;
         }
-        String refreshTokenStr = jwtUtils.generateRefreshToken(user.getId());
+        ru.feryafox.jwt.records.RefreshToken refreshTokenObj = jwtUtils.generateRefreshToken(user.getId());
 
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken(refreshTokenStr);
+        refreshToken.setToken(refreshTokenObj.refreshToken());
         refreshToken.setUser(user);
         refreshToken.setIpAddress(IpAddressUtils.getClientIp(request));
+        refreshToken.setExpiredAt(refreshTokenObj.expiredAt());
 
         refreshTokenRepository.save(refreshToken);
 
         String accessToken = jwtUtils.generateToken(user.getId());
 
-        return new AuthResponse(accessToken, refreshTokenStr);
+        return new AuthResponse(accessToken, refreshTokenObj.refreshToken());
     }
 
+//    @Transactional
+//    public AuthResponse
 }
