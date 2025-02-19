@@ -1,6 +1,8 @@
-package ru.feryafox.authservice.exceptions;
+package ru.feryafox.authservice.exceptions.user;
 
-public class UserIsExistException extends AuthException{
+import ru.feryafox.authservice.exceptions.AuthException;
+
+public class UserIsExistException extends AuthException {
     private static final String MESSAGE_TEMPLATE = "Пользователь с данным телефоном %s уже существует";
 
     public UserIsExistException(String phone) {

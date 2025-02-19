@@ -2,7 +2,7 @@ package ru.feryafox.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import ru.feryafox.jwt.records.RefreshToken;
+import ru.feryafox.jwt.dto.RefreshToken;
 
 import java.security.Key;
 import java.util.*;

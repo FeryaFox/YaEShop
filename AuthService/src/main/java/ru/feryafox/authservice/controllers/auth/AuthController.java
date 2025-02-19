@@ -2,13 +2,12 @@ package ru.feryafox.authservice.controllers.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import ru.feryafox.authservice.models.requests.LoginRequest;
+import ru.feryafox.authservice.models.requests.RefreshTokenRequest;
 import ru.feryafox.authservice.models.requests.RegisterRequest;
+import ru.feryafox.authservice.models.responses.AccessTokenResponse;
 import ru.feryafox.authservice.models.responses.AuthResponse;
 import ru.feryafox.authservice.services.AuthService;
 
@@ -49,6 +48,37 @@ public class AuthController {
                 .build();
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString()).body(authResponse);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(
+            @RequestBody(required = false) RefreshTokenRequest refreshTokenRequest,
+            @CookieValue(name = "refresh_token", required = false) String refreshTokenFromCookie
+    ){
+        String refreshToken = (refreshTokenRequest != null && refreshTokenRequest.getRefreshToken() != null)
+            ? refreshTokenRequest.getRefreshToken()
+            : refreshTokenFromCookie;
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is missing");
+        }
+
+        AuthResponse authResponse = authService.refreshToken(refreshToken);
+
+        if (refreshTokenFromCookie == null) {
+            return ResponseEntity.ok(authResponse);
+        }
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
+                .httpOnly(true)
+                .secure(false) // TODO потом поменять на true
+                .path("/auth/refresh")
+                .maxAge(30 * 24 * 60 * 60)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(AccessTokenResponse.from(authResponse));
     }
 
     @GetMapping("/about")

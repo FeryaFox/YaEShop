@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.feryafox.authservice.entities.RefreshToken;
 import ru.feryafox.authservice.entities.Role;
 import ru.feryafox.authservice.entities.User;
-import ru.feryafox.authservice.exceptions.UserIsExistException;
+import ru.feryafox.authservice.exceptions.token.RefreshTokenIsNotExistException;
+import ru.feryafox.authservice.exceptions.user.UserIsExistException;
 import ru.feryafox.authservice.models.requests.LoginRequest;
 import ru.feryafox.authservice.models.requests.RegisterRequest;
 import ru.feryafox.authservice.models.responses.AuthResponse;
@@ -72,21 +73,38 @@ public class AuthService {
             e.printStackTrace();
             throw e;
         }
-        ru.feryafox.jwt.records.RefreshToken refreshTokenObj = jwtUtils.generateRefreshToken(user.getId());
+        ru.feryafox.jwt.dto.RefreshToken refreshTokenObj = jwtUtils.generateRefreshToken(user.getId());
 
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken(refreshTokenObj.refreshToken());
+        refreshToken.setToken(refreshTokenObj.getRefreshToken());
         refreshToken.setUser(user);
         refreshToken.setIpAddress(IpAddressUtils.getClientIp(request));
-        refreshToken.setExpiredAt(refreshTokenObj.expiredAt());
+        refreshToken.setExpiredAt(refreshTokenObj.getExpiredAt());
 
         refreshTokenRepository.save(refreshToken);
 
         String accessToken = jwtUtils.generateToken(user.getId());
 
-        return new AuthResponse(accessToken, refreshTokenObj.refreshToken());
+        return new AuthResponse(accessToken, refreshTokenObj.getRefreshToken());
     }
 
-//    @Transactional
-//    public AuthResponse
+    @Transactional
+    public AuthResponse refreshToken(String refreshToken) {
+        jwtUtils.validateToken(refreshToken);
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
+
+        User tokenOwner = refreshTokenEntity.getUser();
+
+        ru.feryafox.jwt.dto.RefreshToken newRefreshToken = jwtUtils.generateRefreshToken(tokenOwner.getId());
+
+        refreshTokenEntity.setToken(newRefreshToken.getRefreshToken());
+        refreshTokenEntity.setExpiredAt(newRefreshToken.getExpiredAt());
+
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        String accessToken = jwtUtils.generateToken(tokenOwner.getId());
+
+        return new AuthResponse(accessToken, refreshToken);
+    }
 }
