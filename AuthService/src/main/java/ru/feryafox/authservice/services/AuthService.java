@@ -105,6 +105,6 @@ public class AuthService {
 
         String accessToken = jwtUtils.generateToken(tokenOwner.getId());
 
-        return new AuthResponse(accessToken, refreshToken);
+        return new AuthResponse(accessToken, newRefreshToken.getRefreshToken());
     }
 }
