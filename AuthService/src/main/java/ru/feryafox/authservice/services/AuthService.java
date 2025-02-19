@@ -92,7 +92,7 @@ public class AuthService {
     public AuthResponse refreshToken(String refreshToken) {
         jwtUtils.validateToken(refreshToken);
 
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByTokenAndIsLogoutFalse(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
 
         User tokenOwner = refreshTokenEntity.getUser();
 
@@ -106,5 +106,14 @@ public class AuthService {
         String accessToken = jwtUtils.generateToken(tokenOwner.getId());
 
         return new AuthResponse(accessToken, newRefreshToken.getRefreshToken());
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
+
+        refreshTokenEntity.setIsLogout(true);
+
+        refreshTokenRepository.save(refreshTokenEntity);
     }
 }

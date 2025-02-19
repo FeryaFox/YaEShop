@@ -43,7 +43,7 @@ public class AuthController {
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
                 .httpOnly(true)
                 .secure(false) // TODO потом поменять на true
-                .path("/auth/refresh")
+                .path("/auth")
                 .maxAge(30 * 24 * 60 * 60)
                 .build();
 
@@ -72,13 +72,41 @@ public class AuthController {
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
                 .httpOnly(true)
                 .secure(false) // TODO потом поменять на true
-                .path("/auth/refresh")
+                .path("/auth")
                 .maxAge(30 * 24 * 60 * 60)
                 .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(AccessTokenResponse.from(authResponse));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            @RequestBody(required = false) RefreshTokenRequest refreshTokenRequest,
+            @CookieValue(name = "refresh_token", required = false) String refreshTokenFromCookie
+    ) {
+
+        String refreshToken = (refreshTokenRequest != null && refreshTokenRequest.getRefreshToken() != null)
+                ? refreshTokenRequest.getRefreshToken()
+                : refreshTokenFromCookie;
+
+
+        if (refreshToken != null) {
+            authService.logout(refreshToken);
+        }
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refresh_token", "")
+            .httpOnly(true)
+            .secure(false) // TODO потом поменять на true
+            .path("/auth")
+            .maxAge(0)
+            .sameSite("Strict")
+            .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body("Logged out successfully");
     }
 
     @GetMapping("/about")

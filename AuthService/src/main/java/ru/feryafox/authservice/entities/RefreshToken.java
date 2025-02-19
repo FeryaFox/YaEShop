@@ -35,4 +35,7 @@ public class RefreshToken {
     @Column(name = "expired_at", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiredAt;
+
+    @Column(name = "is_logout", nullable = false)
+    private Boolean isLogout = false;
 }
