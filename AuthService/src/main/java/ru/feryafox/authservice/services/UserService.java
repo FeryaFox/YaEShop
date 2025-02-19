@@ -7,6 +7,7 @@ import org.apache.catalina.Authenticator;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import ru.feryafox.authservice.models.responses.AuthResponse;
 import ru.feryafox.authservice.repositories.RefreshTokenRepository;
 import ru.feryafox.authservice.repositories.RoleRepository;
 import ru.feryafox.authservice.repositories.UserRepository;
+import ru.feryafox.authservice.utils.IpAddressUtils;
 import ru.feryafox.jwt.JwtUtils;
 
 import java.util.Set;
@@ -58,21 +60,28 @@ public class UserService {
 
     @Transactional
     public AuthResponse login(LoginRequest loginRequest, HttpServletRequest request) {
-        System.out.println(123);
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword())
-        );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user;
 
-        User user = (User) authentication.getPrincipal();
+        try{
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword())
+            );
 
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            user = (User) authentication.getPrincipal();
+        }
+        catch (AuthenticationException e) {
+            e.printStackTrace();
+            throw e;
+        }
         String refreshTokenStr = jwtUtils.generateRefreshToken(user.getId());
 
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(refreshTokenStr);
         refreshToken.setUser(user);
-        refreshToken.setIpAddress(getClientIp(request));
+        refreshToken.setIpAddress(IpAddressUtils.getClientIp(request));
 
         refreshTokenRepository.save(refreshToken);
 
@@ -81,22 +90,4 @@ public class UserService {
         return new AuthResponse(accessToken, refreshTokenStr);
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For"); // Проверяем прокси-заголовок
-
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Real-IP"); // Альтернативный заголовок
-        }
-
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr(); // Если нет прокси, получаем обычный IP
-        }
-
-        // Если X-Forwarded-For содержит несколько IP, берём первый
-        if (ip != null && ip.contains(",")) {
-            ip = ip.split(",")[0].trim();
-        }
-
-        return ip;
-    }
 }
