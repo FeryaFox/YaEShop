@@ -16,6 +16,7 @@ import ru.feryafox.jwt.JwtUtils;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -37,11 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
 
+
                 if (jwtUtils.validateToken(token)) {
                     UUID userId = jwtUtils.getUserIdFromToken(token);
 
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
-                    userDetails.getAuthorities().forEach(System.out::println); // STOP HERE
+
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);

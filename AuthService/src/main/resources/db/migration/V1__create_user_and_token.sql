@@ -24,7 +24,7 @@ CREATE TABLE refresh_token (
 
 CREATE TABLE roles (
                        id SERIAL PRIMARY KEY,
-                       name VARCHAR(50) UNIQUE NOT NULL CHECK (name IN ('BUYER', 'SELLER', 'ADMIN', 'DISTRIBUTION_POINT_EMPLOYEE'))
+                       name VARCHAR(50) UNIQUE NOT NULL CHECK (name IN ('ROLE_BUYER', 'ROLE_SELLER', 'ROLE_ADMIN', 'ROLE_DISTRIBUTION_POINT_EMPLOYEE'))
 );
 
 CREATE TABLE user_roles (
@@ -53,7 +53,7 @@ ALTER TABLE refresh_token
     ADD CONSTRAINT fk_refresh_token_user FOREIGN KEY (user_id) REFERENCES users (id);
 
 INSERT INTO roles (name) VALUES
-                             ('BUYER'),
-                             ('SELLER'),
-                             ('ADMIN'),
-                             ('DISTRIBUTION_POINT_EMPLOYEE');
+                             ('ROLE_BUYER'),
+                             ('ROLE_SELLER'),
+                             ('ROLE_ADMIN'),
+                             ('ROLE_DISTRIBUTION_POINT_EMPLOYEE');

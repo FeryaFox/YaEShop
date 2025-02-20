@@ -48,7 +48,7 @@ public class AuthService {
         user.setMiddleName(registerRequest.getMiddleName());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
 
-        Role role = roleRepository.findByName(registerRequest.getRole().equals("SELLER") ? Role.RoleName.SELLER : Role.RoleName.BUYER).get();
+        Role role = roleRepository.findByName(registerRequest.getRole().equals("SELLER") ? Role.RoleName.ROLE_SELLER : Role.RoleName.ROLE_BUYER).get();
 
         user.getRoles().add(role);
 
