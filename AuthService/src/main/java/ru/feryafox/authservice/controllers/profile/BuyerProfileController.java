@@ -16,8 +16,7 @@ public class BuyerProfileController {
     private final BuyerProfileService buyerProfileService;
 
     @GetMapping("")
-    public ResponseEntity<String> getBuyerProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        buyerProfileService.getBuyerProfileService(userDetails.getUsername());
-        return null;
+    public ResponseEntity<?> getBuyerProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok().body(buyerProfileService.getBuyerProfileService(userDetails.getUsername()));
     }
 }
