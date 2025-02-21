@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: product-service
+
+  datasource:
+    url: jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_product
+    username: postgres
+    password: 123
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    reactor.netty.http.client: DEBUG
+    reactor.netty.http.server: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET}

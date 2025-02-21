@@ -8,20 +8,16 @@ import java.security.Key;
 import java.util.*;
 
 
-public class JwtUtils {
-    private final String jwtSecret;
+public class JwtUtils extends JwtUtilsBase {
     private final long jwtExpirationMs;
     private final long refreshTokenExpirationMs;
 
     public JwtUtils(String jwtSecret, long jwtExpirationMs, long refreshTokenExpirationMs) {
-        this.jwtSecret = jwtSecret;
+        super(jwtSecret);
         this.jwtExpirationMs = jwtExpirationMs;
         this.refreshTokenExpirationMs = refreshTokenExpirationMs;
     }
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
-    }
 
     /**
      * Генерация JWT-токена с UUID пользователя
@@ -51,69 +47,7 @@ public class JwtUtils {
         return new RefreshToken(refreshToken, expiredAt);
     }
 
-    /**
-     * Извлекаем UUID пользователя из токена
-     */
-    public UUID getUserIdFromToken(String token) {
-        String userIdStr = Jwts.parser()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
 
-        return UUID.fromString(userIdStr);
-    }
-
-
-    /**
-     * Получаем UUID пользователя из истекшего токена
-     */
-    public UUID getUserIdFromExpiredToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return UUID.fromString(claims.getSubject());
-        } catch (ExpiredJwtException e) {
-            return UUID.fromString(e.getClaims().getSubject());
-        } catch (JwtException e) {
-            throw e;
-        }
-    }
-
-    /**
-     * Валидация токена
-     */
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException e) {
-            throw e;
-        } catch (MalformedJwtException e) {
-            throw e;
-        } catch (UnsupportedJwtException e) {
-            throw e;
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
-    }
-
-    public List<String> getUserRolesFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return (List<String>) claims.get("roles");
-    }
 
     /**
      * Получаем токен из заголовка Authorization

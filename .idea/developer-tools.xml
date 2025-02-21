@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="jwt-encoder-decoder">
+    <developerToolsConfigurations>
+      <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="7a8f93f6-bff3-4da8-9e44-44e282d27929" name="Workbench">
+        <properties>
+          <property key="headerText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;alg&quot; : &quot;HS512&quot;&#13;&#10;}" />
+          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot; : &quot;dccd0582-f83e-49f1-a970-06d57815378c&quot;,&#13;&#10;  &quot;roles&quot; : [&#13;&#10;    &quot;ROLE_SELLER&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot; : 1740174080,&#13;&#10;  &quot;exp&quot; : 1740177680&#13;&#10;}" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkY2NkMDU4Mi1mODNlLTQ5ZjEtYTk3MC0wNmQ1NzgxNTM3OGMiLCJyb2xlcyI6WyJST0xFX1NFTExFUiJdLCJpYXQiOjE3NDAxNzQwODAsImV4cCI6MTc0MDE3NzY4MH0.i7OR1tifsMWoFa-2wN1WBDvM6IOdjSdqnm9CntLEooicRgeteFdKZYZbpdra-eBx-qPhtFeehCdM6x25dypEsg" />
+          <property key="algorithm" type="CONFIGURATION" value="dev.turingcomplete.intellijdevelopertoolsplugin._internal.tool.ui.converter.JwtEncoderDecoder$SignatureAlgorithm|HMAC512" />
+        </properties>
+      </developerToolConfiguration>
+    </developerToolsConfigurations>
+  </component>
+</project>

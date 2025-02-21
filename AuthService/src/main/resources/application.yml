@@ -20,7 +20,7 @@ spring:
     show-sql: true
 
 jwt:
-  secret: C7qpH#SwSHp*mUSrK2FZYsR4^y4AMct^jM4gQD$wARiec!#st9VbT&o4FP*^2^@XHQ$X7p$y4ckS!X76T6M@A8ZZdCFTSC$*WuJVaT4fqKwHS29VU79DQosp
+  secret: ${JWT_SECRET}
   jwt-expiration-ms: 3600000
   refresh-token-expiration-ms: 86400000
   max-session: 5

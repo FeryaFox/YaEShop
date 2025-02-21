@@ -17,6 +17,12 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/profile/**
+
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/product/**
+
 eureka:
   client:
     serviceUrl:
