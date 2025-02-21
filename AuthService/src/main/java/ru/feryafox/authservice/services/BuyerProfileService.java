@@ -45,7 +45,7 @@ public class BuyerProfileService {
             buyer = new Buyer();
             buyer.setUser(user);
         }
-        System.out.println(updateBuyerProfile);
+
         buyer.setFullName(buyer.getUser().getMiddleName() + " " + buyer.getUser().getFirstName() +  buyer.getUser().getSurname());
         buyer.setAddress(updateBuyerProfile.getAddress());
         buyer.setDateOfBirth(updateBuyerProfile.getDateOfBirth());

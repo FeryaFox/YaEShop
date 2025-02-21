@@ -7,7 +7,7 @@ spring:
     name: auth-service
 
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5431/yet_another_e_shop_auth
+    url: jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_auth
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver

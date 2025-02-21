@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -38,11 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
 
-
                 if (jwtUtils.validateToken(token)) {
                     UUID userId = jwtUtils.getUserIdFromToken(token);
-
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
+
+                    log.info("Authenticated user: {} with roles: {}", userDetails.getUsername(),
+                            userDetails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", ")));
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -51,14 +54,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
+            log.warn("Expired token from IP: {}", request.getRemoteAddr());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"invalid_token\", \"message\": \"The token has expired. Please log in again.\"}");
         } catch (JwtException e) {
+            log.warn("Invalid token from IP: {}", request.getRemoteAddr());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"invalid_token\", \"message\": \"Invalid token.\"}");
         } catch (IllegalArgumentException e) {
+            log.warn("Invalid UUID format in token from IP: {}", request.getRemoteAddr());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"invalid_uuid\", \"message\": \"Invalid UUID format.\"}");
