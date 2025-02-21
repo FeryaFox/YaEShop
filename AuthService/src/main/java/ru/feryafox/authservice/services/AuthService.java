@@ -24,6 +24,9 @@ import ru.feryafox.authservice.repositories.UserRepository;
 import ru.feryafox.authservice.utils.IpAddressUtils;
 import ru.feryafox.jwt.JwtUtils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -59,19 +62,23 @@ public class AuthService {
     public AuthResponse login(LoginRequest loginRequest, HttpServletRequest request) {
         User user;
 
-        try{
+        try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getPhoneNumber(), loginRequest.getPassword())
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             user = (User) authentication.getPrincipal();
-        }
-        catch (AuthenticationException e) {
+        } catch (AuthenticationException e) {
             e.printStackTrace();
             throw e;
         }
+
+        // Получение списка ролей пользователя
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toList());
+
         ru.feryafox.jwt.dto.RefreshToken refreshTokenObj = jwtUtils.generateRefreshToken(user.getId());
 
         RefreshToken refreshToken = new RefreshToken();
@@ -82,7 +89,7 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
 
-        String accessToken = jwtUtils.generateToken(user.getId());
+        String accessToken = jwtUtils.generateToken(user.getId(), roles); // Передаем роли
 
         return new AuthResponse(accessToken, refreshTokenObj.getRefreshToken());
     }
@@ -91,9 +98,15 @@ public class AuthService {
     public AuthResponse refreshToken(String refreshToken) {
         jwtUtils.validateToken(refreshToken);
 
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByTokenAndIsLogoutFalse(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByTokenAndIsLogoutFalse(refreshToken)
+                .orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
 
         User tokenOwner = refreshTokenEntity.getUser();
+
+        // Получение списка ролей пользователя
+        List<String> roles = tokenOwner.getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toList());
 
         ru.feryafox.jwt.dto.RefreshToken newRefreshToken = jwtUtils.generateRefreshToken(tokenOwner.getId());
 
@@ -102,11 +115,10 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshTokenEntity);
 
-        String accessToken = jwtUtils.generateToken(tokenOwner.getId());
+        String accessToken = jwtUtils.generateToken(tokenOwner.getId(), roles); // Передаем роли
 
         return new AuthResponse(accessToken, newRefreshToken.getRefreshToken());
     }
-
     @Transactional
     public void logout(String refreshToken) {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));

@@ -26,9 +26,10 @@ public class JwtUtils {
     /**
      * Генерация JWT-токена с UUID пользователя
      */
-    public String generateToken(UUID userId) {
+    public String generateToken(UUID userId, List<String> roles) {
         return Jwts.builder()
                 .setSubject(userId.toString()) // Храним UUID в subject
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -102,6 +103,16 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             throw e;
         }
+    }
+
+    public List<String> getUserRolesFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return (List<String>) claims.get("roles");
     }
 
     /**
