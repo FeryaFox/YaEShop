@@ -2,6 +2,7 @@ package ru.feryafox.authservice.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -22,8 +23,8 @@ public class Buyer {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "date_of_birth")
-    private String dateOfBirth;
+    @Column(name = "date_of_birth", nullable = false)
+    private LocalDate dateOfBirth;
 
     @OneToOne
     @MapsId

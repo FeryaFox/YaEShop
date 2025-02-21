@@ -57,7 +57,6 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest loginRequest, HttpServletRequest request) {
-
         User user;
 
         try{

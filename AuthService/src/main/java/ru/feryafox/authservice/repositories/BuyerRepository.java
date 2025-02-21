@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface BuyerRepository extends JpaRepository<Buyer, UUID> {
     @Override
     Optional<Buyer> findById(UUID uuid);
+
+    Optional<Buyer> findByUser_PhoneNumber(String phoneNumber);
 }

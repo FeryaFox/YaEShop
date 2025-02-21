@@ -31,7 +31,7 @@ public class BuyerProfileResponse {
         buyerProfileResponseBuilder.middleName(user.getMiddleName());
 
         buyerProfileResponseBuilder.address(buyer.getAddress());
-        buyerProfileResponseBuilder.dateOfBirth(buyer.getDateOfBirth());
+        buyerProfileResponseBuilder.dateOfBirth(String.valueOf(buyer.getDateOfBirth()));
 
         return buyerProfileResponseBuilder.build();
     }
