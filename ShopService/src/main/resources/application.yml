@@ -31,6 +31,12 @@ spring:
       group-id: shop-service-group
     bootstrap-servers: "10.242.56.8:9092"
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+
 minio:
   url: http://10.242.56.8:9000
   access-key: minioadmin

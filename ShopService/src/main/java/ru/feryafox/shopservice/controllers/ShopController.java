@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.shopservice.entitis.Shop;
 import ru.feryafox.shopservice.models.requests.CreateShopRequest;
 import ru.feryafox.shopservice.models.responses.CreateShopResponse;
@@ -28,6 +29,15 @@ public class ShopController {
     ) {
         CreateShopResponse response = shopService.createShop(createShopRequest, userDetails.getUsername());
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("{shopId}/upload_image")
+    public ResponseEntity<?> uploadImage(
+            @PathVariable("shopId") String shopId,
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) throws Exception {
+        return ResponseEntity.ok(shopService.uploadImage(file, UUID.fromString(shopId), userDetails.getUsername()));
     }
 
 }
