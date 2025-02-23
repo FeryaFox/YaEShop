@@ -13,6 +13,7 @@ import java.io.InputStream;
 public class MinioService {
     private final MinioClient minioClient;
     private final String bucketName;
+    private final String url;
 
     public MinioService(
             @Value("${minio.url}") String url,
@@ -25,13 +26,12 @@ public class MinioService {
                 .credentials(accessKey, secretKey)
                 .build();
         this.bucketName = bucketName;
+        this.url = url;
     }
 
     public String uploadFile(MultipartFile file) throws Exception {
         byte[] fileBytes = file.getBytes();
-
         String fileHash = HashUtils.getSHA256Hash(fileBytes);
-
         String extension = getFileExtension(file.getOriginalFilename());
         String objectName = fileHash + extension;
 
@@ -45,13 +45,7 @@ public class MinioService {
                         .build()
         );
 
-        return minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .method(Method.GET)
-                        .bucket(bucketName)
-                        .object(objectName)
-                        .build()
-        );
+        return url + "/" + bucketName + "/" + objectName;
     }
 
     private String getFileExtension(String filename) {

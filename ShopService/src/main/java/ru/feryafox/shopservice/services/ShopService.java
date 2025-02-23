@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ShopEvent;
 import ru.feryafox.shopservice.entitis.Shop;
+import ru.feryafox.shopservice.exceptions.NoAccessToShop;
 import ru.feryafox.shopservice.models.requests.CreateShopRequest;
 import ru.feryafox.shopservice.models.responses.CreateShopResponse;
 import ru.feryafox.shopservice.models.responses.ShopInfoResponse;
+import ru.feryafox.shopservice.models.responses.UploadImageResponse;
 import ru.feryafox.shopservice.repositories.ShopRepository;
 import ru.feryafox.shopservice.services.kafka.KafkaProducerService;
 import ru.feryafox.shopservice.services.minio.MinioService;
@@ -47,7 +49,17 @@ public class ShopService {
         return ShopInfoResponse.from(shop);
     }
 
-    public String uploadImage(MultipartFile file, UUID shopId, String userId) throws Exception {
-        return minioService.uploadFile(file);
+    @Transactional
+    public UploadImageResponse uploadImage(MultipartFile file, UUID shopId, String userId) throws Exception {
+        Shop shop = baseService.getShop(shopId);
+
+        if (!shop.getUserOwner().equals(UUID.fromString(userId))) throw new NoAccessToShop(userId, shopId.toString());
+
+        String uploadedFilePath = minioService.uploadFile(file);
+
+        shop.setShopImage(uploadedFilePath);
+        shopRepository.save(shop);
+
+        return new UploadImageResponse(uploadedFilePath);
     }
 }
