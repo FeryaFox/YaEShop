@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.shopservice.models.requests.CreateShopRequest;
+import ru.feryafox.shopservice.models.requests.UpdateShopRequest;
 import ru.feryafox.shopservice.models.responses.CreateShopResponse;
 import ru.feryafox.shopservice.services.ShopService;
 
@@ -36,4 +37,13 @@ public class ShopController {
         return ResponseEntity.ok(shopService.uploadImage(file, UUID.fromString(shopId), userDetails.getUsername()));
     }
 
+    @PutMapping("{shopId}")
+    public ResponseEntity<?> updateShop(
+            @RequestBody UpdateShopRequest updateShopRequest,
+            @PathVariable("shopId") UUID shopId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        shopService.updateShop(updateShopRequest, shopId, userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
 }
