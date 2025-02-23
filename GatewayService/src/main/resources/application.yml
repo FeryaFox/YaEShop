@@ -23,6 +23,10 @@ spring:
           predicates:
             - Path=/product/**
 
+        - id: shop-service
+          uri: lb://shop-service
+          predicates:
+            - Path=/shop/**
 eureka:
   client:
     serviceUrl:

@@ -1,4 +1,4 @@
-package ru.feryafox.productservice.configs;
+package ru.feryafox.shopservice.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

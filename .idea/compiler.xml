@@ -12,6 +12,7 @@
         <module name="EurekaService" />
         <module name="GatewayService" />
         <module name="AuthService" />
+        <module name="ShopService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -25,6 +26,7 @@
       <module name="GatewateService" options="-parameters" />
       <module name="GatewayService" options="" />
       <module name="ProductService" options="" />
+      <module name="ShopService" options="" />
     </option>
   </component>
 </project>

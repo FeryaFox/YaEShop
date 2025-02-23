@@ -1,12 +1,13 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
-    name: product-service
+    name: shop-service
+
 
   datasource:
-    url: jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_product
+    url: jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_shop
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
@@ -27,16 +28,9 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-      group-id: product-service-group
-
+      group-id: shop-service-group
     bootstrap-servers: "10.242.56.8:9092"
-
-logging:
-  level:
-    root: INFO
-    org.springframework.security: DEBUG
-    reactor.netty.http.client: DEBUG
-    reactor.netty.http.server: DEBUG
 
 jwt:
   secret: ${JWT_SECRET}
+

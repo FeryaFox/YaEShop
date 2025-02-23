@@ -13,5 +13,28 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    environment:
+      zookeeper_client_port: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      kafka_broker_id: 1
+      kafka_zookeeper_connect: "zookeeper:2181"
+
+      kafka_listeners: plaintext://0.0.0.0:9092
+      kafka_advertised_listeners: plaintext://127.0.0.1:9092
+
+      kafka_offsets_topic_replication_factor: 1
+    depends_on:
+      - zookeeper
 volumes:
   postgres_data:
