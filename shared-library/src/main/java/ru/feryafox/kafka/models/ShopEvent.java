@@ -10,5 +10,12 @@ import lombok.NoArgsConstructor;
 public class ShopEvent {
     private String shopId;
     private String shopName;
-    private String shopStatus;
+    private String ownerId;
+    private ShopStatus shopStatus;
+
+    public enum ShopStatus {
+        CREATED,
+        UPDATED,
+        CLOSED
+    }
 }

@@ -21,7 +21,8 @@ public class SecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/product/ping").hasRole("SELLER")
+                        .requestMatchers("/shop/{shopId}").permitAll()
+                        .requestMatchers("/shop/**").hasRole("SELLER")
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 

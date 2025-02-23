@@ -31,6 +31,13 @@ spring:
       group-id: shop-service-group
     bootstrap-servers: "10.242.56.8:9092"
 
+minio:
+  url: http://10.242.56.8:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: shop-images
+  endpoint: http://10.242.56.8:9000
+
 jwt:
   secret: ${JWT_SECRET}
 
