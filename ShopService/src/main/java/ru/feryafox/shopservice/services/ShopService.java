@@ -72,6 +72,13 @@ public class ShopService {
         shop.setShopName(updateShopRequest.getName());
         shop.setShopDescription(updateShopRequest.getDescription());
 
+        ShopEvent shopEvent = new ShopEvent();
+        shopEvent.setShopId(shopId.toString());
+        shopEvent.setShopName(shop.getShopName());
+        shopEvent.setOwnerId(userId);
+        shopEvent.setShopStatus(ShopEvent.ShopStatus.UPDATED);
+        kafkaProducerService.sendShopUpdate(shopEvent);
+
         shopRepository.save(shop);
     }
 }
