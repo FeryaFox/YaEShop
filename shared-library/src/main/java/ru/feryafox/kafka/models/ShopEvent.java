@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShopEvent {
+public class ShopEvent implements BaseKafkaModel {
+    private final String type = "ShopEvent";
     private String shopId;
     private String shopName;
     private String ownerId;

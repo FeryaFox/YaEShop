@@ -24,9 +24,10 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: ru.feryafox.kafka.deserializer.CustomKafkaDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        event.class.ShopEvent: ru.feryafox.kafka.models.ShopEvent
       group-id: product-service-group
 
     bootstrap-servers: "10.242.56.8:9092"

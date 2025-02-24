@@ -5,36 +5,85 @@ services:
     image: postgres:14
     container_name: postgresYaEShop
     ports:
-      - "5431:5432" # Порт PostgreSQL
+      - "5431:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: yet_another_e_shop
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
+    container_name: zookeeperYaEShop
     restart: always
     environment:
-      zookeeper_client_port: 2181
+      ZOOKEEPER_CLIENT_PORT: 2181
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka
+    container_name: kafkaYaEShop
     restart: always
     ports:
       - "9092:9092"
     environment:
-      kafka_broker_id: 1
-      kafka_zookeeper_connect: "zookeeper:2181"
-
-      kafka_listeners: plaintext://0.0.0.0:9092
-      kafka_advertised_listeners: plaintext://127.0.0.1:9092
-
-      kafka_offsets_topic_replication_factor: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.242.56.8:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
+
+  minio:
+    image: minio/minio:latest
+    container_name: minioYaEShop
+    ports:
+      - "9000:9000" # Для S3 API
+      - "9090:9090" # Для веб-интерфейса
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9090"
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodbYaEShop
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  redis:
+    image: redis:latest
+    container_name: redisYaEshop
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  elasticsearch:
+    image: elasticsearch:8.17.2
+    container_name: elasticsearchYaEShop
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
 volumes:
   postgres_data:
+  mongodb_data:
+  redis_data:
+  elasticsearch_data:

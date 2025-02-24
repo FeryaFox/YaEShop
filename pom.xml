@@ -16,6 +16,8 @@
         <module>EurekaService</module>
         <module>GatewayService</module>
         <module>shared-library</module>
+        <module>ShopService</module>
+        <module>ProductService</module>
     </modules>
 
     <properties>
