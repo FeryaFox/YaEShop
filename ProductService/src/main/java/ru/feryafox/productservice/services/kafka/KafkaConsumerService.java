@@ -23,9 +23,9 @@ public class KafkaConsumerService {
 
         if (event instanceof ShopEvent shopEvent) {
             Shop shop = new Shop();
-            shop.setId(UUID.fromString(shopEvent.getShopId()));
+            shop.setId(shopEvent.getShopId());
             shop.setShopName(shopEvent.getShopName());
-            shop.setUserOwner(UUID.fromString(shopEvent.getOwnerId()));
+            shop.setUserOwner(shopEvent.getOwnerId());
 
             shopRepository.save(shop);
 

@@ -1,31 +1,26 @@
 package ru.feryafox.productservice.entities;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity
-@Table(name = "shops")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Document(collection = "shops")
 public class Shop {
     @Id
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private String id;
 
-    @Column(name = "user_owner", nullable = false)
-    private UUID userOwner;
-
-    @Column(name = "shop_name", nullable = false)
+    private String userOwner;
     private String shopName;
 
-    @OneToMany(mappedBy = "shop", cascade = {CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true)
-    private Set<Product> products = new LinkedHashSet<>();
-
+    @DBRef
+    private Set<Product> products = new HashSet<>();
 }

@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="jwt-encoder-decoder">
+  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="base64-encoder-decoder">
     <developerToolsConfigurations>
       <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="7a8f93f6-bff3-4da8-9e44-44e282d27929" name="Workbench">
         <properties>
           <property key="headerText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;alg&quot; : &quot;HS512&quot;&#13;&#10;}" />
           <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot; : &quot;6bc37834-1967-4a8a-8eb8-659aeec205a6&quot;,&#13;&#10;  &quot;roles&quot; : [&#13;&#10;    &quot;ROLE_SELLER&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot; : 1740322000,&#13;&#10;  &quot;exp&quot; : 1740325600&#13;&#10;}" />
-          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2YmMzNzgzNC0xOTY3LTRhOGEtOGViOC02NTlhZWVjMjA1YTYiLCJyb2xlcyI6WyJST0xFX1NFTExFUiJdLCJpYXQiOjE3NDAzMjIwMDAsImV4cCI6MTc0MDMyNTYwMH0.44seKjH9yGmCSxXQ0-5I-Y2wyUrpKOW2NQLqaum5IsKWxP5rKuMisCiVS7-gUZOCnDw0bKLx4deTfjqE5gHJ3g" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2YmMzNzgzNC0xOTY3LTRhOGEtOGViOC02NTlhZWVjMjA1YTYiLCJyb2xlcyI6WyJST0xFX1NFTExFUiJdLCJpYXQiOjE3NDAzMjIwMDAsImV4cCI6MTc0MDMyNTYwMH0.ll8A5nAyBMgJNSkDFi_s0RAa-ayZ7jOfokqhVvKzc-uCKkw6ovjErY2ikrW3kssWraCQR5p4ymS5_c5uhX-Bzg" />
           <property key="algorithm" type="CONFIGURATION" value="dev.turingcomplete.intellijdevelopertoolsplugin._internal.tool.ui.converter.JwtEncoderDecoder$SignatureAlgorithm|HMAC512" />
+        </properties>
+      </developerToolConfiguration>
+      <developerToolConfiguration developerToolId="url-base64-encoder-decoder" id="85ea7da0-0162-47c3-9658-2da50c6101ae" name="Workbench">
+        <properties>
+          <property key="sourceText" type="INPUT" value="kotlin.String|pEDTJ7tc1dfUcfkTy7cXiQ==" />
+          <property key="targetText" type="INPUT" value="kotlin.String|cEVEVEo3dGMxZGZVY2ZrVHk3Y1hpUT09" />
+        </properties>
+      </developerToolConfiguration>
+      <developerToolConfiguration developerToolId="base64-encoder-decoder" id="c8eac8ef-c1e7-4af4-bfd7-67b32e5c6176" name="Workbench">
+        <properties>
+          <property key="sourceText" type="INPUT" value="kotlin.String|pEDTJ7tc1dfUcfkTy7cXiQ==" />
+          <property key="targetText" type="INPUT" value="kotlin.String|cEVEVEo3dGMxZGZVY2ZrVHk3Y1hpUT09" />
         </properties>
       </developerToolConfiguration>
     </developerToolsConfigurations>

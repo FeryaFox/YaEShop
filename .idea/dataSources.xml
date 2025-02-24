@@ -22,15 +22,17 @@
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+        <property name="com.intellij.clouds.kubernetes.db.resource.type" value="Deployment" />
         <property name="com.intellij.clouds.kubernetes.db.container.port" />
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="yet_another_e_shop_product@10.242.56.8" uuid="b8e4d795-cf8a-4b0e-af80-f2df7e83abf1">
-      <driver-ref>postgresql</driver-ref>
+    <data-source source="LOCAL" name="yet_another_e_shop_product@10.242.56.8" uuid="c402714c-d127-4909-9a92-a0d7f6d6cfe9">
+      <driver-ref>mongo.4</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_product</jdbc-url>
+      <imported>true</imported>
+      <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
+      <jdbc-url>mongodb://10.242.56.8:27017/yet_another_e_shop_product?authSource=admin</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

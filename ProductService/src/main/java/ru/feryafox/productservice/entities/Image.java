@@ -1,34 +1,25 @@
 package ru.feryafox.productservice.entities;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.UUID;
 
-@Entity
-@Table(name = "images")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Document(collection = "images")
 public class Image {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private String id;
 
-    @Column(name = "image_url", nullable = false)
     private String imageUrl;
-
-    @Column(name = "position", nullable = false)
     private int position;
+    private String uploadedUser;
 
-    @Column(name = "uploaded_user")
-    private UUID uploadedUser;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
+    @DBRef
     private Product product;
-
 }
