@@ -5,10 +5,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.feryafox.kafka.models.ShopEvent;
-import ru.feryafox.productservice.entities.Shop;
-import ru.feryafox.productservice.repositories.ShopRepository;
-
-import java.util.UUID;
+import ru.feryafox.productservice.entities.mongo.Shop;
+import ru.feryafox.productservice.repositories.mongo.ShopRepository;
 
 @Service
 @RequiredArgsConstructor

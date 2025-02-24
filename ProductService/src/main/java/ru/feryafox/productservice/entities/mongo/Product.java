@@ -1,9 +1,10 @@
-package ru.feryafox.productservice.entities;
+package ru.feryafox.productservice.entities.mongo;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import ru.feryafox.productservice.models.requests.CreateProductRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class Product {
     private String description;
     private BigDecimal price;
 
+    private String userCreate;
+
     @DBRef
     private Shop shop;
 
@@ -30,5 +33,16 @@ public class Product {
     private Set<Image> images;
 
     private Map<String, String> attributes;
+
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public static Product from(CreateProductRequest createProductRequest) {
+        Product product = new Product();
+        product.setName(createProductRequest.getName());
+        product.setDescription(createProductRequest.getDescription());
+        product.setPrice(BigDecimal.valueOf(createProductRequest.getPrice()));
+        product.setAttributes(createProductRequest.getAttributes());
+
+        return product;
+    }
 }
