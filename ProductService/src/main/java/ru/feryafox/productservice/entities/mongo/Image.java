@@ -19,5 +19,6 @@ public class Image {
     private String uploadedUser;
 
     @DBRef
+    @EqualsAndHashCode.Exclude
     private Product product;
 }

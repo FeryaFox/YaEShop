@@ -8,6 +8,7 @@ import ru.feryafox.productservice.models.requests.CreateProductRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,10 +28,13 @@ public class Product {
     private String userCreate;
 
     @DBRef
+    @EqualsAndHashCode.Exclude
     private Shop shop;
 
+
     @DBRef
-    private Set<Image> images;
+    @EqualsAndHashCode.Exclude
+    private Set<Image> images = new HashSet<>();
 
     private Map<String, String> attributes;
 

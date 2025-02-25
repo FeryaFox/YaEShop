@@ -21,5 +21,6 @@ public class Shop {
     private String shopName;
 
     @DBRef
+    @EqualsAndHashCode.Exclude
     private Set<Product> products = new HashSet<>();
 }

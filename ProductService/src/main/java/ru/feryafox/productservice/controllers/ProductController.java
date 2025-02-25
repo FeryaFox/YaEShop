@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.models.requests.CreateProductRequest;
 import ru.feryafox.productservice.models.responses.CreateProductResponse;
+import ru.feryafox.productservice.models.responses.UploadImageResponse;
 import ru.feryafox.productservice.services.ProductService;
 
 import java.util.UUID;
@@ -32,10 +33,11 @@ public class ProductController {
 
     @PostMapping("{productId}/upload_image")
     public ResponseEntity<?> uploadImage(
-        @PathParam("productId") UUID productId,
+        @PathVariable("productId") String productId,
         @RequestParam("file") MultipartFile file,
         @AuthenticationPrincipal UserDetails userDetails
-    ) {
-
+    ) throws Exception {
+        UploadImageResponse response = productService.uploadImage(file, productId, userDetails.getUsername());
+        return ResponseEntity.ok(response);
     }
 }
