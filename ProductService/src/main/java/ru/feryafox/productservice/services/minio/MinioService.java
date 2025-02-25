@@ -1,14 +1,9 @@
-package ru.feryafox.shopservice.services.minio;
+package ru.feryafox.productservice.services.minio;
 
-import io.minio.*;
-import io.minio.http.Method;
+import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.minio.BaseMinioService;
-import ru.feryafox.utils.HashUtils;
-
-import java.io.InputStream;
 
 @Service
 public class MinioService extends BaseMinioService {

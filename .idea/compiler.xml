@@ -10,13 +10,15 @@
         <module name="shared-library" />
         <module name="ProductService" />
         <module name="EurekaService" />
-        <module name="GatewayService" />
         <module name="AuthService" />
         <module name="ShopService" />
+        <module name="GatewayService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="GatewateService" target="17" />
+      <module name="ProductService (1)" target="1.8" />
+      <module name="ProductService (2)" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ShopEvent;
 import ru.feryafox.shopservice.entitis.Shop;
-import ru.feryafox.shopservice.exceptions.NoAccessToShop;
 import ru.feryafox.shopservice.models.requests.CreateShopRequest;
 import ru.feryafox.shopservice.models.requests.UpdateShopRequest;
 import ru.feryafox.shopservice.models.responses.CreateShopResponse;
@@ -56,7 +55,7 @@ public class ShopService {
 
         baseService.isUserHasAccessToShop(shopId, UUID.fromString(userId));
 
-        String uploadedFilePath = minioService.uploadFile(file);
+        String uploadedFilePath = minioService.uploadImage(file);
 
         shop.setShopImage(uploadedFilePath);
         shopRepository.save(shop);

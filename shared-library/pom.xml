@@ -72,6 +72,10 @@
            <scope>test</scope>
        </dependency>
 
+       <dependency>
+           <groupId>io.minio</groupId>
+           <artifactId>minio</artifactId>
+       </dependency>
    </dependencies>
 
 </project>
