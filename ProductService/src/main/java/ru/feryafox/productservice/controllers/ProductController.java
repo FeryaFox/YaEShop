@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.models.requests.CreateProductRequest;
+import ru.feryafox.productservice.models.requests.UpdateProductRequest;
 import ru.feryafox.productservice.models.responses.CreateProductResponse;
 import ru.feryafox.productservice.models.responses.UploadImageResponse;
 import ru.feryafox.productservice.services.ProductService;
@@ -39,5 +40,15 @@ public class ProductController {
     ) throws Exception {
         UploadImageResponse response = productService.uploadImage(file, productId, userDetails.getUsername());
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("{productId}")
+    public ResponseEntity<?> updateProduct(
+            @PathVariable("productId") String productId,
+            @RequestBody UpdateProductRequest updateProductRequest,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Product updatedProduct = productService.updateProduct(productId, updateProductRequest, userDetails.getUsername());
+        return ResponseEntity.ok(updatedProduct);
     }
 }

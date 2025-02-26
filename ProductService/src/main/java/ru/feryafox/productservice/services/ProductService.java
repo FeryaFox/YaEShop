@@ -7,19 +7,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.feryafox.kafka.models.ProductEvent;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
 import ru.feryafox.productservice.exceptions.ShopIsNotExist;
 import ru.feryafox.productservice.models.requests.CreateProductRequest;
+import ru.feryafox.productservice.models.requests.UpdateProductRequest;
 import ru.feryafox.productservice.models.responses.CreateProductResponse;
 import ru.feryafox.productservice.models.responses.ProductInfoResponse;
 import ru.feryafox.productservice.models.responses.UploadImageResponse;
-import ru.feryafox.productservice.repositories.elastic.ProductSearchRepository;
 import ru.feryafox.productservice.repositories.mongo.ImageRepository;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
 import ru.feryafox.productservice.services.feign.FeignService;
+import ru.feryafox.productservice.services.kafka.KafkaProducerService;
 import ru.feryafox.productservice.services.minio.MinioService;
 
 import java.util.ArrayList;
@@ -32,10 +34,10 @@ public class ProductService {
     private final ShopRepository shopRepository;
     private final BaseService baseService;
     private final ProductRepository productRepository;
-    private final ProductSearchRepository productSearchRepository;
     private final MinioService minioService;
     private final ImageRepository imageRepository;
     private final FeignService feignService;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public CreateProductResponse createProduct(CreateProductRequest createProductRequest, String userId) {
@@ -52,6 +54,10 @@ public class ProductService {
         product.setUserCreate(userId);
 
         product = productRepository.save(product);
+
+        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ShopStatus.CREATED);
+        kafkaProducerService.sendProductEvent(productEvent);
+
         // TODO добавить сюда Elasticsearch
 //        ProductIndex productIndex = ProductIndex.of(product);
 //        productSearchRepository.save(productIndex);
@@ -112,5 +118,22 @@ public class ProductService {
                 .toList();
 
         return productInfoResponses;
+    }
+
+    @Transactional
+    public Product updateProduct(String productId, UpdateProductRequest updateRequest, String userId) {
+        Product product = baseService.getProduct(productId);
+
+        baseService.isUserHasAccessToProduct(productId, userId);
+
+        product.setName(updateRequest.getName());
+        product.setDescription(updateRequest.getDescription());
+        product.setPrice(updateRequest.getPrice());
+        product.setAttributes(updateRequest.getAttributes());
+
+        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ShopStatus.UPDATED);
+        kafkaProducerService.sendProductEvent(productEvent);
+
+        return productRepository.save(product);
     }
 }

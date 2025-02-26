@@ -3,6 +3,7 @@ package ru.feryafox.productservice.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.feryafox.kafka.models.ProductEvent;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
 import ru.feryafox.productservice.exceptions.NoAccessToTheProductException;
@@ -36,6 +37,17 @@ public class BaseService {
 
     public void isUserHasAccessToShop(Shop shop, String userId) {
         if (!shop.getUserOwner().equals(userId)) throw new NoAccessToTheShopException(shop.getId(), userId);
+    }
+
+    public ProductEvent convertProductToEvent(Product product, ProductEvent.ShopStatus status) {
+        ProductEvent productEvent = new ProductEvent();
+        productEvent.setProductId(product.getId());
+        productEvent.setShopId(product.getShop().getId());
+        productEvent.setOwnerId(product.getUserCreate());
+        productEvent.setName(product.getName());
+        productEvent.setStatus(status);
+
+        return productEvent;
     }
 //    public Shop getShopFromShopService(String shopId) {
 //        try {
