@@ -1,6 +1,8 @@
 package ru.feryafox.productservice.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.productservice.entities.mongo.Image;
@@ -15,6 +17,9 @@ import ru.feryafox.productservice.repositories.mongo.ImageRepository;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
 import ru.feryafox.productservice.services.minio.MinioService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -72,5 +77,17 @@ public class ProductService {
         ProductInfoResponse productInfoResponse = ProductInfoResponse.from(product);
 
         return productInfoResponse;
+    }
+
+    public List<ProductInfoResponse> getProductInfoFromShop(String shopId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<Product> products = productRepository.findAllByShop_Id(shopId, pageable);
+
+        List<ProductInfoResponse> productInfoResponses = products.stream()
+                .map(ProductInfoResponse::from)
+                .toList();
+
+        return productInfoResponses;
     }
 }
