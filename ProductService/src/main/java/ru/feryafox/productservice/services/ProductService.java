@@ -3,20 +3,18 @@ package ru.feryafox.productservice.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.feryafox.productservice.entities.elastic.ProductIndex;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
 import ru.feryafox.productservice.models.requests.CreateProductRequest;
 import ru.feryafox.productservice.models.responses.CreateProductResponse;
+import ru.feryafox.productservice.models.responses.ProductInfoResponse;
 import ru.feryafox.productservice.models.responses.UploadImageResponse;
 import ru.feryafox.productservice.repositories.elastic.ProductSearchRepository;
 import ru.feryafox.productservice.repositories.mongo.ImageRepository;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
 import ru.feryafox.productservice.services.minio.MinioService;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -66,5 +64,13 @@ public class ProductService {
         productRepository.save(product);
 
         return new UploadImageResponse(url, position);
+    }
+
+    public ProductInfoResponse getProductInfo(String productId) {
+        Product product = baseService.getProduct(productId);
+
+        ProductInfoResponse productInfoResponse = ProductInfoResponse.from(product);
+
+        return productInfoResponse;
     }
 }
