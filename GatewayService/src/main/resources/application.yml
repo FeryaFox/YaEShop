@@ -27,6 +27,14 @@ spring:
           uri: lb://shop-service
           predicates:
             - Path=/shop/**
+
+        - id: internal-shop-service
+          uri: lb://shop-service
+          predicates:
+            - Path=/internal/shop/**
+          filters:
+            - name: InternalFilter
+
 eureka:
   client:
     serviceUrl:
@@ -39,3 +47,7 @@ logging:
     reactor.netty.http.client: DEBUG
     reactor.netty.http.server: DEBUG
     ru.feryafox.gatewayservice.filters.RouteLoggingFilter: DEBUG  # Укажите правильный путь к вашему классу
+
+internal:
+  api:
+    key: ${INTERNAL_SECRET_KEY}

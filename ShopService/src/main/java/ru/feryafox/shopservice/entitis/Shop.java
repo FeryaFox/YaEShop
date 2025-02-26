@@ -3,6 +3,7 @@ package ru.feryafox.shopservice.entitis;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import ru.feryafox.models.internal.responses.ShopInfoInternalResponse;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -56,5 +57,18 @@ public class Shop {
                 "shopName = " + shopName + ", " +
                 "shopDescription = " + shopDescription + ", " +
                 "shopImage = " + shopImage + ")";
+    }
+
+    public static ShopInfoInternalResponse toShopInfoInternalResponse(Shop shop) {
+
+        ShopInfoInternalResponse shopInfoInternalResponse = new ShopInfoInternalResponse();
+
+        shopInfoInternalResponse.setShopId(String.valueOf(shop.getId()));
+        shopInfoInternalResponse.setUserId(String.valueOf(shop.getUserOwner()));
+        shopInfoInternalResponse.setName(shop.getShopName());
+        shopInfoInternalResponse.setDescription(shop.getShopDescription());
+        shopInfoInternalResponse.setImage(shop.getShopImage());
+
+        return shopInfoInternalResponse;
     }
 }

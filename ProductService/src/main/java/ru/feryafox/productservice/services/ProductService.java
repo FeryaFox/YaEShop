@@ -1,5 +1,7 @@
 package ru.feryafox.productservice.services;
 
+import feign.FeignException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
+import ru.feryafox.productservice.exceptions.ShopIsNotExist;
 import ru.feryafox.productservice.models.requests.CreateProductRequest;
 import ru.feryafox.productservice.models.responses.CreateProductResponse;
 import ru.feryafox.productservice.models.responses.ProductInfoResponse;
@@ -16,6 +19,7 @@ import ru.feryafox.productservice.repositories.elastic.ProductSearchRepository;
 import ru.feryafox.productservice.repositories.mongo.ImageRepository;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
+import ru.feryafox.productservice.services.feign.FeignService;
 import ru.feryafox.productservice.services.minio.MinioService;
 
 import java.util.ArrayList;
@@ -31,11 +35,18 @@ public class ProductService {
     private final ProductSearchRepository productSearchRepository;
     private final MinioService minioService;
     private final ImageRepository imageRepository;
+    private final FeignService feignService;
 
+    @Transactional
     public CreateProductResponse createProduct(CreateProductRequest createProductRequest, String userId) {
-        Product product = Product.from(createProductRequest);
-        Shop shop = baseService.getShop(createProductRequest.getShopId());
+        var shopOptional = shopRepository.findById(createProductRequest.getShopId());
+        Shop shop;
 
+        shop = shopOptional.orElseGet(() -> getAndSaveShopFromShopService(createProductRequest.getShopId()));
+
+        baseService.isUserHasAccessToShop(shop, userId);
+
+        Product product = Product.from(createProductRequest);
 
         product.setShop(shop);
         product.setUserCreate(userId);
@@ -46,6 +57,18 @@ public class ProductService {
 //        productSearchRepository.save(productIndex);
 
         return new CreateProductResponse(product.getId());
+    }
+
+    public Shop getAndSaveShopFromShopService(String shopId) {
+        try {
+            var resp = feignService.getShopInfo(shopId);
+            Shop shop = Shop.from(resp);
+            shop = shopRepository.save(shop);
+            return shop;
+        }
+        catch (FeignException.NotFound e) {
+            throw new ShopIsNotExist(shopId);
+        }
     }
 
     public UploadImageResponse uploadImage(MultipartFile file, String productId, String userId) throws Exception {

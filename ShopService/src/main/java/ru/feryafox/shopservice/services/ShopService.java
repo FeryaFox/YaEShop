@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ShopEvent;
+import ru.feryafox.models.internal.responses.ShopInfoInternalResponse;
 import ru.feryafox.shopservice.entitis.Shop;
 import ru.feryafox.shopservice.models.requests.CreateShopRequest;
 import ru.feryafox.shopservice.models.requests.UpdateShopRequest;
@@ -47,6 +48,11 @@ public class ShopService {
     public ShopInfoResponse getShopInfo(UUID shopId) {
         Shop shop = baseService.getShop(shopId);
         return ShopInfoResponse.from(shop);
+    }
+
+    public ShopInfoInternalResponse getIternalShopInfo(UUID shopId) {
+        Shop shop = baseService.getShop(shopId);
+        return Shop.toShopInfoInternalResponse(shop);
     }
 
     @Transactional

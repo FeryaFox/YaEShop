@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import ru.feryafox.models.internal.responses.ShopInfoInternalResponse;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,4 +24,13 @@ public class Shop {
     @DBRef
     @EqualsAndHashCode.Exclude
     private Set<Product> products = new HashSet<>();
+
+    public static Shop from(ShopInfoInternalResponse shopInfoResponse) {
+        Shop shop = new Shop();
+        shop.setShopName(shopInfoResponse.getName());
+        shop.setId(shop.getId());
+        shop.setUserOwner(shopInfoResponse.getUserId());
+
+        return shop;
+    }
 }

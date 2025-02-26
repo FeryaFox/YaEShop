@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
 import ru.feryafox.productservice.exceptions.NoAccessToTheProductException;
+import ru.feryafox.productservice.exceptions.NoAccessToTheShopException;
 import ru.feryafox.productservice.exceptions.ProductIsNotExist;
 import ru.feryafox.productservice.exceptions.ShopIsNotExist;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
@@ -32,4 +33,13 @@ public class BaseService {
         Product product = getProduct(productId);
         if (!product.getUserCreate().equals(userId)) throw new NoAccessToTheProductException(productId, userId);
     }
+
+    public void isUserHasAccessToShop(Shop shop, String userId) {
+        if (!shop.getUserOwner().equals(userId)) throw new NoAccessToTheShopException(shop.getId(), userId);
+    }
+//    public Shop getShopFromShopService(String shopId) {
+//        try {
+//
+//        }
+//    }
 }

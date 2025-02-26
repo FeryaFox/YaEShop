@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/shop/{shopId}").permitAll()
                         .requestMatchers("/shop/**").hasRole("SELLER")
+                        .requestMatchers("/internal/shop/**").permitAll()
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
