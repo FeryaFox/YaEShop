@@ -1,4 +1,4 @@
-package ru.feryafox.reviewservice.services;
+package ru.feryafox.reviewservice.services.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

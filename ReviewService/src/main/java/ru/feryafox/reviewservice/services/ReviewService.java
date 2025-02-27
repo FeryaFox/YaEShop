@@ -8,6 +8,7 @@ import ru.feryafox.reviewservice.entities.Review;
 import ru.feryafox.reviewservice.models.requests.CreateReviewRequest;
 import ru.feryafox.reviewservice.models.responses.CreateReviewResponse;
 import ru.feryafox.reviewservice.repositories.ReviewRepository;
+import ru.feryafox.reviewservice.services.kafka.KafkaProducerService;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final BaseService baseService;
+    private final KafkaProducerService kafkaProducerService;
 
     public CreateReviewResponse createReview(CreateReviewRequest request, String userId) {
 
@@ -40,7 +42,12 @@ public class ReviewService {
             var avgRating = avgRatingByProductOptional.get().getAverageRating();
             var event = baseService.convertToReviewEvent(review, avgRating, ReviewEvent.ReviewStatus.CREATED);
 
-            // STOP HERE
+            kafkaProducerService.sendReviewUpdate(event);
+        } else {
+            System.out.println("Не удалось подсчитать среднюю оценку");
         }
+
+        return new CreateReviewResponse(review.getId());
     }
 }
+
