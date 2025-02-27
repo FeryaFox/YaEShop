@@ -14,9 +14,9 @@ public class ProductEvent implements BaseKafkaModel{
     private String shopId;
     private String ownerId;
     private String name;
-    private ShopStatus status;
+    private ProductStatus status;
 
-    public enum ShopStatus {
+    public enum ProductStatus {
         CREATED,
         UPDATED,
         DELETED

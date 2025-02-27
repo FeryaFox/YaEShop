@@ -35,6 +35,10 @@ spring:
           filters:
             - name: InternalFilter
 
+        - id: review-service
+          uri: lb://review-service
+          predicates:
+            - Path=/review/**
 eureka:
   client:
     serviceUrl:

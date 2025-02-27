@@ -24,7 +24,6 @@ import ru.feryafox.productservice.services.feign.FeignService;
 import ru.feryafox.productservice.services.kafka.KafkaProducerService;
 import ru.feryafox.productservice.services.minio.MinioService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +54,7 @@ public class ProductService {
 
         product = productRepository.save(product);
 
-        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ShopStatus.CREATED);
+        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ProductStatus.CREATED);
         kafkaProducerService.sendProductEvent(productEvent);
 
         // TODO добавить сюда Elasticsearch
@@ -131,7 +130,7 @@ public class ProductService {
         product.setPrice(updateRequest.getPrice());
         product.setAttributes(updateRequest.getAttributes());
 
-        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ShopStatus.UPDATED);
+        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ProductStatus.UPDATED);
         kafkaProducerService.sendProductEvent(productEvent);
 
         return productRepository.save(product);

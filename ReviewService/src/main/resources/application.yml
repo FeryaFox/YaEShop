@@ -1,0 +1,27 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: review-service
+
+  data:
+    mongodb:
+      uri: mongodb://root:example@10.242.56.8:27017/yet_another_e_shop_review?authSource=admin
+
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: ru.feryafox.kafka.deserializer.CustomKafkaDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        event.class.ProductEvent: ru.feryafox.kafka.models.ProductEvent
+      group-id: review-service-group
+
+    bootstrap-servers: "10.242.56.8:9092"
+
+jwt:
+  secret: ${JWT_SECRET}

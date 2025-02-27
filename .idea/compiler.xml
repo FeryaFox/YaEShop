@@ -12,6 +12,7 @@
         <module name="EurekaService" />
         <module name="AuthService" />
         <module name="ShopService" />
+        <module name="ReviewService" />
         <module name="GatewayService" />
       </profile>
     </annotationProcessing>
@@ -28,6 +29,7 @@
       <module name="GatewateService" options="-parameters" />
       <module name="GatewayService" options="" />
       <module name="ProductService" options="" />
+      <module name="ReviewService" options="" />
       <module name="ShopService" options="" />
     </option>
   </component>

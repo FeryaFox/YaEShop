@@ -18,6 +18,7 @@
         <module>shared-library</module>
         <module>ShopService</module>
         <module>ProductService</module>
+        <module>ReviewService</module>
     </modules>
 
     <properties>
