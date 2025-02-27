@@ -35,6 +35,13 @@ spring:
           filters:
             - name: InternalFilter
 
+        - id: internal-auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/internal/auth/**
+          filters:
+            - name: InternalFilter
+
         - id: review-service
           uri: lb://review-service
           predicates:

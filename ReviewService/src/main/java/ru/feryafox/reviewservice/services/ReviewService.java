@@ -87,5 +87,7 @@ public class ReviewService {
             System.out.println("Не удалось подсчитать среднюю оценку");
         }
     }
+
+    public
 }
 

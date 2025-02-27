@@ -9,6 +9,7 @@ import ru.feryafox.authservice.exceptions.user.UserIsNotExistException;
 import ru.feryafox.authservice.repositories.BuyerRepository;
 import ru.feryafox.authservice.repositories.SellerRepository;
 import ru.feryafox.authservice.repositories.UserRepository;
+import ru.feryafox.models.internal.responses.UserProfileResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -32,4 +33,5 @@ public class BaseService {
     public Seller getSellerOrNull(String phone) {
         return sellerRepository.findByUser_PhoneNumber(phone).orElse(null);
     }
+
 }

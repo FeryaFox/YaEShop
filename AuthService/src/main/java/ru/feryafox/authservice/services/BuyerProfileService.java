@@ -10,10 +10,12 @@ import ru.feryafox.authservice.entities.User;
 import ru.feryafox.authservice.exceptions.user.UserIsNotExistException;
 import ru.feryafox.authservice.models.requests.UpdateBuyerProfile;
 import ru.feryafox.authservice.models.responses.BuyerProfileResponse;
+import ru.feryafox.models.internal.responses.UserProfileResponse;
 import ru.feryafox.authservice.repositories.BuyerRepository;
 import ru.feryafox.authservice.repositories.UserRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,4 +54,5 @@ public class BuyerProfileService {
 
         buyerRepository.save(buyer);
     }
+
 }
