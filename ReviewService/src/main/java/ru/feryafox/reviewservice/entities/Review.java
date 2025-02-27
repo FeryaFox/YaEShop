@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import ru.feryafox.reviewservice.models.requests.CreateReviewRequest;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +17,10 @@ public class Review {
     @Id
     private String id;
 
-    private String title;
-    private String content;
+    private String positive;
+    private String negative;
+    private String comment;
+
     private String author;
 
     private int rating;
