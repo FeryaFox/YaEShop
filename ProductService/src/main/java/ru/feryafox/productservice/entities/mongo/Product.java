@@ -27,6 +27,9 @@ public class Product {
 
     private String userCreate;
 
+    private double productRating;
+    private long countProductReviews;
+
     @DBRef
     @EqualsAndHashCode.Exclude
     private Shop shop;

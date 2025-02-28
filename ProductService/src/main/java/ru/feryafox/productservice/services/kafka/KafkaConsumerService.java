@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import ru.feryafox.kafka.models.ReviewEvent;
 import ru.feryafox.kafka.models.ShopEvent;
 import ru.feryafox.productservice.entities.mongo.Shop;
+import ru.feryafox.productservice.exceptions.ShopAndProductDontLinkedException;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
+import ru.feryafox.productservice.services.BaseService;
 import ru.feryafox.productservice.services.ProductService;
 
 @Service
@@ -17,6 +20,7 @@ public class KafkaConsumerService {
     private final ShopRepository shopRepository;
     private final ProductRepository productRepository;
     private final ProductService productService;
+    private final BaseService baseService;
 
     @KafkaListener(topics = "shop-topic", groupId = "product-service-group")
     public void listen(ConsumerRecord<String, Object> record) {
@@ -57,6 +61,29 @@ public class KafkaConsumerService {
                 }
             }
 
+        } else {
+            System.out.println("⚠️ Получен неизвестный тип события: " + event);
+        }
+    }
+
+
+    @KafkaListener(topics = "review-topic", groupId = "pruduct-servuce-group")
+    public void listenReview(ConsumerRecord<String, Object> record) {
+
+        Object event = record.value();
+
+        if (event instanceof ReviewEvent reviewEvent) {
+
+            var product = baseService.getProduct(reviewEvent.getProductId());
+
+            if (!product.getShop().equals(product.getShop())) {
+                throw new ShopAndProductDontLinkedException(reviewEvent.getProductId(), reviewEvent.getShopId());
+            }
+
+            product.setProductRating(reviewEvent.getAvgProductRating());
+            product.setCountProductReviews(reviewEvent.getCountProductReviews());
+
+            //STOP HERE
         } else {
             System.out.println("⚠️ Получен неизвестный тип события: " + event);
         }

@@ -3,6 +3,7 @@ package ru.feryafox.productservice.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.feryafox.kafka.models.ProductEvent;
+import ru.feryafox.kafka.models.ShopRatingEvent;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
 import ru.feryafox.productservice.exceptions.NoAccessToTheProductException;
@@ -46,9 +47,16 @@ public class BaseService {
 
         return productEvent;
     }
-//    public Shop getShopFromShopService(String shopId) {
-//        try {
-//
-//        }
-//    }
+
+    public ShopRatingEvent createShopRatingEvent(String shopId, double shopRating) {
+        ShopRatingEvent shopRatingEvent = new ShopRatingEvent();
+        shopRatingEvent.setShopId(shopId);
+        shopRatingEvent.setShopRating(shopRating);
+
+        return shopRatingEvent;
+    }
+
+    public void sendShopRating(String shopId) {
+
+    }
 }

@@ -84,7 +84,9 @@ public class ReviewService {
 
         if (avgRatingByProductOptional.isPresent()) {
             var avgRating = avgRatingByProductOptional.get().getAverageRating();
-            var event = baseService.convertToReviewEvent(review, avgRating, status);
+            var countReview = reviewRepository.countByProduct_Id(review.getProduct().getId());
+            var event = baseService.convertToReviewEvent(review, avgRating, status, countReview);
+
             kafkaProducerService.sendReviewUpdate(event);
         } else {
             System.out.println("Не удалось подсчитать среднюю оценку");

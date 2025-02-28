@@ -17,6 +17,7 @@ public class ReviewEvent implements BaseKafkaModel{
     private String author;
     private int rating;
     private double avgProductRating;
+    private long countProductReviews;
     private ReviewStatus status;
 
     public enum ReviewStatus {

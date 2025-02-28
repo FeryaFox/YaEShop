@@ -26,7 +26,8 @@ public class BaseService {
         return productRepository.findById(productId).orElseThrow(() -> new ProductIsNotExistsException(productId));
     }
 
-    public ReviewEvent convertToReviewEvent(Review review, double avgProductRating, ReviewEvent.ReviewStatus reviewStatus) {
+    public ReviewEvent convertToReviewEvent(Review review, double avgProductRating, ReviewEvent.ReviewStatus reviewStatus, long countProductReviews) {
+
         ReviewEvent event = new ReviewEvent();
         event.setReviewId(review.getId());
         event.setShopId(review.getProduct().getShop());
@@ -36,6 +37,7 @@ public class BaseService {
         event.setRating(review.getRating());
         event.setAvgProductRating(avgProductRating);
         event.setStatus(reviewStatus);
+        event.setCountProductReviews(countProductReviews);
 
         return event;
     }
