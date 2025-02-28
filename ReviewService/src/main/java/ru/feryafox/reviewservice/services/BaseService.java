@@ -7,6 +7,7 @@ import ru.feryafox.reviewservice.entities.Product;
 import ru.feryafox.reviewservice.entities.Review;
 import ru.feryafox.reviewservice.exceptions.ProductIsNotExistsException;
 import ru.feryafox.reviewservice.exceptions.ReviewAlreadyExistsException;
+import ru.feryafox.reviewservice.exceptions.ReviewIsNotExistsException;
 import ru.feryafox.reviewservice.repositories.ProductRepository;
 import ru.feryafox.reviewservice.repositories.ReviewRepository;
 
@@ -37,5 +38,9 @@ public class BaseService {
         event.setStatus(reviewStatus);
 
         return event;
+    }
+
+    public Review getReview(String reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewIsNotExistsException(reviewId));
     }
 }

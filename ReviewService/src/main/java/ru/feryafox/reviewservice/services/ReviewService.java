@@ -3,11 +3,13 @@ package ru.feryafox.reviewservice.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.feryafox.kafka.models.ReviewEvent;
+import ru.feryafox.models.internal.responses.UserProfileResponse;
 import ru.feryafox.reviewservice.entities.Product;
 import ru.feryafox.reviewservice.entities.Review;
 import ru.feryafox.reviewservice.models.requests.CreateReviewRequest;
 import ru.feryafox.reviewservice.models.requests.UpdateReviewRequest;
 import ru.feryafox.reviewservice.models.responses.CreateReviewResponse;
+import ru.feryafox.reviewservice.models.responses.ReviewInfoResponse;
 import ru.feryafox.reviewservice.repositories.ReviewRepository;
 import ru.feryafox.reviewservice.services.kafka.KafkaProducerService;
 
@@ -20,6 +22,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final BaseService baseService;
     private final KafkaProducerService kafkaProducerService;
+    private final FeignService feignService;
 
     public CreateReviewResponse createReview(CreateReviewRequest request, String userId) {
         var product = baseService.getProductById(request.getProductId());
@@ -88,6 +91,12 @@ public class ReviewService {
         }
     }
 
-    public
+    public ReviewInfoResponse getReviewInfo(String reviewId) {
+        Review review = baseService.getReview(reviewId);
+
+        UserProfileResponse response = feignService.getUserProfile(review.getAuthor());
+
+        return ReviewInfoResponse.from(review, response);
+    }
 }
 
