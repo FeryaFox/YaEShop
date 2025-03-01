@@ -12,6 +12,7 @@ import ru.feryafox.productservice.exceptions.ProductIsNotExist;
 import ru.feryafox.productservice.exceptions.ShopIsNotExist;
 import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
+import ru.feryafox.productservice.services.kafka.KafkaProducerService;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class BaseService {
 
     private final ShopRepository shopRepository;
     private final ProductRepository productRepository;
+    private final KafkaProducerService kafkaProducerService;
 
     public Shop getShop(String shopId) {
         return shopRepository.findById(shopId).orElseThrow(() -> new ShopIsNotExist(shopId));
@@ -37,26 +39,4 @@ public class BaseService {
         if (!shop.getUserOwner().equals(userId)) throw new NoAccessToTheShopException(shop.getId(), userId);
     }
 
-    public ProductEvent convertProductToEvent(Product product, ProductEvent.ProductStatus status) {
-        ProductEvent productEvent = new ProductEvent();
-        productEvent.setProductId(product.getId());
-        productEvent.setShopId(product.getShop().getId());
-        productEvent.setOwnerId(product.getUserCreate());
-        productEvent.setName(product.getName());
-        productEvent.setStatus(status);
-
-        return productEvent;
-    }
-
-    public ShopRatingEvent createShopRatingEvent(String shopId, double shopRating) {
-        ShopRatingEvent shopRatingEvent = new ShopRatingEvent();
-        shopRatingEvent.setShopId(shopId);
-        shopRatingEvent.setShopRating(shopRating);
-
-        return shopRatingEvent;
-    }
-
-    public void sendShopRating(String shopId) {
-
-    }
 }

@@ -35,6 +35,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         event.class.ShopEvent: ru.feryafox.kafka.models.ShopEvent
+        event.class.ReviewEvent: ru.feryafox.kafka.models.ReviewEvent
       group-id: product-service-group
 
     bootstrap-servers: "10.242.56.8:9092"

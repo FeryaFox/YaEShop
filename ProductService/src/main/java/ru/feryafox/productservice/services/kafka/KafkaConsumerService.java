@@ -21,6 +21,8 @@ public class KafkaConsumerService {
     private final ProductRepository productRepository;
     private final ProductService productService;
     private final BaseService baseService;
+    private final KafkaProducerService kafkaProducerService;
+    private final KafkaService kafkaService;
 
     @KafkaListener(topics = "shop-topic", groupId = "product-service-group")
     public void listen(ConsumerRecord<String, Object> record) {
@@ -74,16 +76,11 @@ public class KafkaConsumerService {
 
         if (event instanceof ReviewEvent reviewEvent) {
 
-            var product = baseService.getProduct(reviewEvent.getProductId());
+            productService.updateProductRating(reviewEvent);
 
-            if (!product.getShop().equals(product.getShop())) {
-                throw new ShopAndProductDontLinkedException(reviewEvent.getProductId(), reviewEvent.getShopId());
-            }
 
-            product.setProductRating(reviewEvent.getAvgProductRating());
-            product.setCountProductReviews(reviewEvent.getCountProductReviews());
-
-            //STOP HERE
+            // FIXME почему-то оправляется оценка магазина 0
+            kafkaService.sendShopRating(reviewEvent.getShopId());
         } else {
             System.out.println("⚠️ Получен неизвестный тип события: " + event);
         }

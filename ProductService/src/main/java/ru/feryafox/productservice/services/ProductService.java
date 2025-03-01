@@ -8,9 +8,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ProductEvent;
+import ru.feryafox.kafka.models.ReviewEvent;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
+import ru.feryafox.productservice.exceptions.ShopAndProductDontLinkedException;
 import ru.feryafox.productservice.exceptions.ShopIsNotExist;
 import ru.feryafox.productservice.models.requests.CreateProductRequest;
 import ru.feryafox.productservice.models.requests.UpdateProductRequest;
@@ -22,6 +24,7 @@ import ru.feryafox.productservice.repositories.mongo.ProductRepository;
 import ru.feryafox.productservice.repositories.mongo.ShopRepository;
 import ru.feryafox.productservice.services.feign.FeignService;
 import ru.feryafox.productservice.services.kafka.KafkaProducerService;
+import ru.feryafox.productservice.services.kafka.KafkaService;
 import ru.feryafox.productservice.services.minio.MinioService;
 
 import java.util.List;
@@ -37,6 +40,7 @@ public class ProductService {
     private final ImageRepository imageRepository;
     private final FeignService feignService;
     private final KafkaProducerService kafkaProducerService;
+    private final KafkaService kafkaService;
 
     @Transactional
     public CreateProductResponse createProduct(CreateProductRequest createProductRequest, String userId) {
@@ -54,7 +58,7 @@ public class ProductService {
 
         product = productRepository.save(product);
 
-        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ProductStatus.CREATED);
+        ProductEvent productEvent = kafkaService.convertProductToEvent(product, ProductEvent.ProductStatus.CREATED);
         kafkaProducerService.sendProductEvent(productEvent);
 
         // TODO добавить сюда Elasticsearch
@@ -130,9 +134,25 @@ public class ProductService {
         product.setPrice(updateRequest.getPrice());
         product.setAttributes(updateRequest.getAttributes());
 
-        ProductEvent productEvent = baseService.convertProductToEvent(product, ProductEvent.ProductStatus.UPDATED);
+        ProductEvent productEvent = kafkaService.convertProductToEvent(product, ProductEvent.ProductStatus.UPDATED);
         kafkaProducerService.sendProductEvent(productEvent);
 
         return productRepository.save(product);
+    }
+
+
+    @Transactional
+    public void updateProductRating(ReviewEvent reviewEvent) {
+
+        var product = baseService.getProduct(reviewEvent.getProductId());
+
+        if (!product.getShop().equals(product.getShop())) {
+            throw new ShopAndProductDontLinkedException(reviewEvent.getProductId(), reviewEvent.getShopId());
+        }
+
+        product.setProductRating(reviewEvent.getAvgProductRating());
+        product.setCountProductReviews(reviewEvent.getCountProductReviews());
+
+        productRepository.save(product);
     }
 }
