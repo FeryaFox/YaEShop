@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DiffGenerationConfig" isInitGenerateDdl="true">
-    <option name="initGenerateDdl" value="true" />
-    <option name="sourceModelValue" value="ProductService:entityManagerFactory" />
+  <component name="DiffGenerationConfig">
+    <option name="sourceModelValue" value="ShopService:ShopService" />
+    <option name="targetDbValue" value="c55cfbf8-9f76-4560-8273-cff62c1a2606" />
   </component>
 </project>

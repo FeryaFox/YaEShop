@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import ru.feryafox.models.internal.responses.ShopInfoInternalResponse;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -33,6 +34,33 @@ public class Shop {
     @Column(name = "shop_image")
     private String shopImage;
 
+    @Column(name = "rating")
+    private BigDecimal rating;
+
+    public static ShopInfoInternalResponse toShopInfoInternalResponse(Shop shop) {
+
+        ShopInfoInternalResponse shopInfoInternalResponse = new ShopInfoInternalResponse();
+
+        shopInfoInternalResponse.setShopId(String.valueOf(shop.getId()));
+        shopInfoInternalResponse.setUserId(String.valueOf(shop.getUserOwner()));
+        shopInfoInternalResponse.setName(shop.getShopName());
+        shopInfoInternalResponse.setDescription(shop.getShopDescription());
+        shopInfoInternalResponse.setImage(shop.getShopImage());
+
+        return shopInfoInternalResponse;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "userOwner = " + userOwner + ", " +
+                "shopName = " + shopName + ", " +
+                "shopDescription = " + shopDescription + ", " +
+                "shopImage = " + shopImage + ", " +
+                "rating = " + rating + ")";
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -47,28 +75,5 @@ public class Shop {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ", " +
-                "userOwner = " + userOwner + ", " +
-                "shopName = " + shopName + ", " +
-                "shopDescription = " + shopDescription + ", " +
-                "shopImage = " + shopImage + ")";
-    }
-
-    public static ShopInfoInternalResponse toShopInfoInternalResponse(Shop shop) {
-
-        ShopInfoInternalResponse shopInfoInternalResponse = new ShopInfoInternalResponse();
-
-        shopInfoInternalResponse.setShopId(String.valueOf(shop.getId()));
-        shopInfoInternalResponse.setUserId(String.valueOf(shop.getUserOwner()));
-        shopInfoInternalResponse.setName(shop.getShopName());
-        shopInfoInternalResponse.setDescription(shop.getShopDescription());
-        shopInfoInternalResponse.setImage(shop.getShopImage());
-
-        return shopInfoInternalResponse;
     }
 }

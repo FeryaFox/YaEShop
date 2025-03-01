@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ShopEvent;
+import ru.feryafox.kafka.models.ShopRatingEvent;
 import ru.feryafox.models.internal.responses.ShopInfoInternalResponse;
 import ru.feryafox.shopservice.entitis.Shop;
 import ru.feryafox.shopservice.models.requests.CreateShopRequest;
@@ -16,6 +17,7 @@ import ru.feryafox.shopservice.repositories.ShopRepository;
 import ru.feryafox.shopservice.services.kafka.KafkaProducerService;
 import ru.feryafox.shopservice.services.minio.MinioService;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -53,6 +55,14 @@ public class ShopService {
     public ShopInfoInternalResponse getInternalShopInfo(UUID shopId) {
         Shop shop = baseService.getShop(shopId);
         return Shop.toShopInfoInternalResponse(shop);
+    }
+
+    @Transactional
+    public void updateShopRatingFromEvent(ShopRatingEvent ratingEvent) {
+       var shop = baseService.getShop(UUID.fromString(ratingEvent.getShopId()));
+
+       shop.setRating(BigDecimal.valueOf(ratingEvent.getShopRating()));
+       shopRepository.save(shop);
     }
 
     @Transactional

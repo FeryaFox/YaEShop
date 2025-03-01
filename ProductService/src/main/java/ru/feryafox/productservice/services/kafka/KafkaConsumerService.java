@@ -78,8 +78,6 @@ public class KafkaConsumerService {
 
             productService.updateProductRating(reviewEvent);
 
-
-            // FIXME почему-то оправляется оценка магазина 0
             kafkaService.sendShopRating(reviewEvent.getShopId());
         } else {
             System.out.println("⚠️ Получен неизвестный тип события: " + event);
