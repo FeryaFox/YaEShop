@@ -106,9 +106,7 @@ public class ProductService {
     public ProductInfoResponse getProductInfo(String productId) {
         Product product = baseService.getProduct(productId);
 
-        ProductInfoResponse productInfoResponse = ProductInfoResponse.from(product);
-
-        return productInfoResponse;
+        return ProductInfoResponse.from(product);
     }
 
     public List<ProductInfoResponse> getProductInfoFromShop(String shopId, int page, int size) {
@@ -116,11 +114,9 @@ public class ProductService {
 
         List<Product> products = productRepository.findAllByShop_Id(shopId, pageable);
 
-        List<ProductInfoResponse> productInfoResponses = products.stream()
+        return products.stream()
                 .map(ProductInfoResponse::from)
                 .toList();
-
-        return productInfoResponses;
     }
 
     @Transactional

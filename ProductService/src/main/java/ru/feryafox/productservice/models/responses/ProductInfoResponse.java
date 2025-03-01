@@ -22,6 +22,8 @@ public class ProductInfoResponse {
     private String shopId;
     private Set<ImageResponse> images;
     private Map<String, String> attributes;
+    private double price;
+    private double rating;
 
     @Data
     @AllArgsConstructor
@@ -46,6 +48,9 @@ public class ProductInfoResponse {
         productInfoResponse.setDescription(product.getDescription());
         productInfoResponse.setShopId(product.getShop().getId());
         productInfoResponse.setAttributes(product.getAttributes());
+        productInfoResponse.setPrice(product.getPrice().doubleValue());
+        productInfoResponse.setRating(product.getProductRating());
+
         productInfoResponse.setImages(product.getImages().stream()
                 .map(ImageResponse::fromImage)
                 .sorted(Comparator.comparingInt(ImageResponse::getPosition))
