@@ -1,6 +1,5 @@
-package ru.feryafox.productservice.controllers;
+package ru.feryafox.productservice.controllers.publics.authrequired;
 
-import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,8 +12,6 @@ import ru.feryafox.productservice.models.requests.UpdateProductRequest;
 import ru.feryafox.productservice.models.responses.CreateProductResponse;
 import ru.feryafox.productservice.models.responses.UploadImageResponse;
 import ru.feryafox.productservice.services.ProductService;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/product/")

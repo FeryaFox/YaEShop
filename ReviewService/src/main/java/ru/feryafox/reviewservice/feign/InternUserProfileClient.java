@@ -9,7 +9,7 @@ import ru.feryafox.models.internal.responses.UserProfileResponse;
 
 @FeignClient(name = "auth-service")
 public interface InternUserProfileClient {
-    @GetMapping("/intern/auth/profile/buyer/{userId}") // STOP HERE
+    @GetMapping("/intern/auth/profile/buyer/{userId}")
     UserProfileResponse getUserProfileIntern(
             @PathVariable("userId") String userId,
             @RequestHeader("X-Internal-API-Key") String apiKey

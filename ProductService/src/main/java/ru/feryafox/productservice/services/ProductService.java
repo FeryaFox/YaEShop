@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ProductEvent;
 import ru.feryafox.kafka.models.ReviewEvent;
+import ru.feryafox.models.internal.responses.ProductInfoInternResponse;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.entities.mongo.Shop;
@@ -116,6 +117,14 @@ public class ProductService {
 
         return products.stream()
                 .map(ProductInfoResponse::from)
+                .toList();
+    }
+
+    public List<ProductInfoInternResponse> getProductInfoIntern(String shopId, int page, int size) {
+        var products = getProductInfoFromShop(shopId, page, size);
+
+        return products.stream()
+                .map(ProductInfoResponse::toIntern)
                 .toList();
     }
 

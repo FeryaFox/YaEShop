@@ -47,3 +47,6 @@ minio:
 jwt:
   secret: ${JWT_SECRET}
 
+internal:
+  api:
+    key: ${INTERNAL_SECRET_KEY}

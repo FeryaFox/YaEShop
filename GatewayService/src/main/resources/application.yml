@@ -23,6 +23,13 @@ spring:
           predicates:
             - Path=/product/**
 
+        - id: internal-product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/internal/product/**
+          filters:
+            - name: InternalFilter
+
         - id: shop-service
           uri: lb://shop-service
           predicates:

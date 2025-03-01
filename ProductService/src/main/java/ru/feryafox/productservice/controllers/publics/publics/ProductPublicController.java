@@ -1,10 +1,8 @@
-package ru.feryafox.productservice.controllers;
+package ru.feryafox.productservice.controllers.publics.publics;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.feryafox.productservice.entities.mongo.Product;
 import ru.feryafox.productservice.models.responses.ProductInfoResponse;
 import ru.feryafox.productservice.services.ProductService;
 
@@ -21,7 +19,7 @@ public class ProductPublicController {
         return ResponseEntity.ok(productInfoResponse);
     }
 
-    @GetMapping("/shop/{shopId}")
+    @GetMapping("shop/{shopId}")
     public ResponseEntity<?> getStore(
             @PathVariable("shopId") String shopId,
             @RequestParam(name = "page", defaultValue = "0") int page,

@@ -3,6 +3,7 @@ package ru.feryafox.productservice.models.responses;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.feryafox.models.internal.responses.ProductInfoInternResponse;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
 
@@ -39,6 +40,15 @@ public class ProductInfoResponse {
 
            return imageResponse;
        }
+
+       public static ProductInfoInternResponse.ImageInternResponse toIntern(ImageResponse imageResponse) {
+           var builder = ProductInfoInternResponse.ImageInternResponse.builder();
+
+           builder.url(imageResponse.getUrl())
+                   .position(imageResponse.getPosition());
+
+           return builder.build();
+       }
     }
 
     public static ProductInfoResponse from(Product product) {
@@ -58,5 +68,21 @@ public class ProductInfoResponse {
         );
 
         return productInfoResponse;
+    }
+
+    public static ProductInfoInternResponse toIntern(ProductInfoResponse product) {
+        var productInfoInternResponseBuilder = ProductInfoInternResponse.builder();
+
+        productInfoInternResponseBuilder
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .shopId(product.getShopId())
+                .images(product.getImages().stream().map(ImageResponse::toIntern).collect(Collectors.toCollection(LinkedHashSet::new)))
+                .attributes(product.getAttributes())
+                .price(product.getPrice())
+                .rating(product.getRating());
+
+        return productInfoInternResponseBuilder.build();
     }
 }

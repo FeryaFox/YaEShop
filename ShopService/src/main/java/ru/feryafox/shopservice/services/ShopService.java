@@ -50,7 +50,7 @@ public class ShopService {
         return ShopInfoResponse.from(shop);
     }
 
-    public ShopInfoInternalResponse getIternalShopInfo(UUID shopId) {
+    public ShopInfoInternalResponse getInternalShopInfo(UUID shopId) {
         Shop shop = baseService.getShop(shopId);
         return Shop.toShopInfoInternalResponse(shop);
     }

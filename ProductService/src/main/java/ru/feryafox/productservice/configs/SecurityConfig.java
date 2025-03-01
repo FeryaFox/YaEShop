@@ -22,6 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/product/{productId}", "/product/shop/{shopId}").permitAll()
+                        .requestMatchers("/intern/product/**").permitAll()
                         .requestMatchers("/product/**").hasRole("SELLER")
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
