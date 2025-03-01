@@ -23,6 +23,7 @@ public class Shop {
 
     @DBRef
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Product> products = new HashSet<>();
 
     public static Shop from(ShopInfoInternalResponse shopInfoResponse) {

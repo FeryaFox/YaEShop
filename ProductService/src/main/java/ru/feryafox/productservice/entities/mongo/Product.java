@@ -37,6 +37,7 @@ public class Product {
 
     @DBRef
     @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<Image> images = new HashSet<>();
 
     private Map<String, String> attributes;

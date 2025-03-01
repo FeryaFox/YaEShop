@@ -45,18 +45,18 @@ public class ProductService {
     @Transactional
     public CreateProductResponse createProduct(CreateProductRequest createProductRequest, String userId) {
         var shopOptional = shopRepository.findById(createProductRequest.getShopId());
-        Shop shop;
-
-        shop = shopOptional.orElseGet(() -> getAndSaveShopFromShopService(createProductRequest.getShopId()));
+        Shop shop = shopOptional.orElseGet(() -> getAndSaveShopFromShopService(createProductRequest.getShopId()));
 
         baseService.isUserHasAccessToShop(shop, userId);
 
         Product product = Product.from(createProductRequest);
-
         product.setShop(shop);
         product.setUserCreate(userId);
 
+        shop.getProducts().add(product);
+
         product = productRepository.save(product);
+        shopRepository.save(shop);
 
         ProductEvent productEvent = kafkaService.convertProductToEvent(product, ProductEvent.ProductStatus.CREATED);
         kafkaProducerService.sendProductEvent(productEvent);

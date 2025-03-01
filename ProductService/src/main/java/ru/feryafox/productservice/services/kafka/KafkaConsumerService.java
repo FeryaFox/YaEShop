@@ -69,7 +69,7 @@ public class KafkaConsumerService {
     }
 
 
-    @KafkaListener(topics = "review-topic", groupId = "pruduct-servuce-group")
+    @KafkaListener(topics = "review-topic", groupId = "product-service-group")
     public void listenReview(ConsumerRecord<String, Object> record) {
 
         Object event = record.value();
