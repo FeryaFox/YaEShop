@@ -15,14 +15,18 @@ public class ShopInfoResponse {
     private String name;
     private String description;
     private String image;
+    private double rating;
 
     public static ShopInfoResponse from (Shop shop) {
         ShopInfoResponse.ShopInfoResponseBuilder builder = ShopInfoResponse.builder();
 
-        builder.shopId(String.valueOf(shop.getId()));
-        builder.name(shop.getShopName());
-        builder.description(shop.getShopDescription());
-        builder.image(shop.getShopImage());
+        var rating = shop.getRating();
+
+        builder.shopId(String.valueOf(shop.getId()))
+                .name(shop.getShopName())
+                .description(shop.getShopDescription())
+                .image(shop.getShopImage())
+                .rating(rating != null ? rating.doubleValue() : 0.0);
 
         return builder.build();
     }
