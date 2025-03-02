@@ -103,4 +103,11 @@ public class CartService {
 
         cartRepository.save(cart);
     }
+
+    public void clearCart(String userId) {
+        var cart = baseService.getCartOrNullByUserId(userId);
+        if (cart == null) throw new NoCartException(userId);
+        cart.getItems().clear();
+        cartRepository.save(cart);
+    }
 }

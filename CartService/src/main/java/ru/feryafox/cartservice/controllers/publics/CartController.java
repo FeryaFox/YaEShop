@@ -41,4 +41,12 @@ public class CartController {
         cartService.deleteProductFromCart(productId, userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("")
+    public ResponseEntity<?> clearCart(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        cartService.clearCart(userDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
