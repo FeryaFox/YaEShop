@@ -18,10 +18,7 @@ import ru.feryafox.productservice.services.ProductService;
 public class KafkaConsumerService {
 
     private final ShopRepository shopRepository;
-    private final ProductRepository productRepository;
     private final ProductService productService;
-    private final BaseService baseService;
-    private final KafkaProducerService kafkaProducerService;
     private final KafkaService kafkaService;
 
     @KafkaListener(topics = "shop-topic", groupId = "product-service-group")

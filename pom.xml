@@ -19,6 +19,7 @@
         <module>ShopService</module>
         <module>ProductService</module>
         <module>ReviewService</module>
+        <module>CartService</module>
     </modules>
 
     <properties>

@@ -48,4 +48,14 @@ public class ProductController {
         Product updatedProduct = productService.updateProduct(productId, updateProductRequest, userDetails.getUsername());
         return ResponseEntity.ok(updatedProduct);
     }
+
+    @PostMapping("{productId}/add_to_cart")
+    public ResponseEntity<?> addToCard(
+            @PathVariable("productId") String productId,
+            @RequestParam(name = "quantity", defaultValue = "1") int quantity,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        productService.addToCart(productId, quantity, userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
 }

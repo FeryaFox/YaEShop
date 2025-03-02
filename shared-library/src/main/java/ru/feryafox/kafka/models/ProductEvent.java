@@ -15,6 +15,7 @@ public class ProductEvent implements BaseKafkaModel{
     private String ownerId;
     private String name;
     private ProductStatus status;
+    private double price;
 
     public enum ProductStatus {
         CREATED,

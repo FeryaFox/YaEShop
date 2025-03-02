@@ -53,6 +53,18 @@ spring:
           uri: lb://review-service
           predicates:
             - Path=/review/**
+
+        - id: cart-service
+          uri: lb://cart-service
+          predicates:
+            - Path=/cart/**
+
+        - id: internal-cart-service
+          uri: lb://cart-service
+          predicates:
+            - Path=/internal/cart/**
+          filters:
+            - name: InternalFilter
 eureka:
   client:
     serviceUrl:

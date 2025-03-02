@@ -30,6 +30,8 @@ public class Product {
     private double productRating;
     private long countProductReviews;
 
+    // TODO убрать использование DBRef
+
     @DBRef
     @EqualsAndHashCode.Exclude
     private Shop shop;

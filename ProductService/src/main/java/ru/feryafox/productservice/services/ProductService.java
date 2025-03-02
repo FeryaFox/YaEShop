@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.kafka.models.ProductEvent;
 import ru.feryafox.kafka.models.ReviewEvent;
+import ru.feryafox.models.internal.requests.AddToCartRequest;
 import ru.feryafox.models.internal.responses.ProductInfoInternResponse;
 import ru.feryafox.productservice.entities.mongo.Image;
 import ru.feryafox.productservice.entities.mongo.Product;
@@ -58,7 +59,7 @@ public class ProductService {
 
         product = productRepository.save(product);
         shopRepository.save(shop);
-
+        System.out.println(product.getPrice().doubleValue());
         ProductEvent productEvent = kafkaService.convertProductToEvent(product, ProductEvent.ProductStatus.CREATED);
         kafkaProducerService.sendProductEvent(productEvent);
 
@@ -159,5 +160,15 @@ public class ProductService {
         product.setCountProductReviews(reviewEvent.getCountProductReviews());
 
         productRepository.save(product);
+    }
+
+    public void addToCart(String productId, int quantity, String userId) {
+        var product = baseService.getProduct(productId);
+
+        var request = AddToCartRequest.builder()
+                .price(product.getPrice().doubleValue())
+                .productId(productId).build();
+
+        feignService.addToCart(userId, quantity, request);
     }
 }

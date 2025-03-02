@@ -2,6 +2,8 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/AuthService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/CartService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/CartService/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/EurekaService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/GatewateService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/GatewayService/src/main/java" charset="UTF-8" />

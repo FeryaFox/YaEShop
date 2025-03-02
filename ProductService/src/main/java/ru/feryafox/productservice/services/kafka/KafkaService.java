@@ -23,6 +23,7 @@ public class KafkaService {
         productEvent.setOwnerId(product.getUserCreate());
         productEvent.setName(product.getName());
         productEvent.setStatus(status);
+        productEvent.setPrice(product.getPrice().doubleValue());
 
         return productEvent;
     }

@@ -12,6 +12,7 @@
         <module name="EurekaService" />
         <module name="AuthService" />
         <module name="ShopService" />
+        <module name="CartService" />
         <module name="ReviewService" />
         <module name="GatewayService" />
       </profile>
@@ -24,6 +25,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="AuthService" options="" />
+      <module name="CartService" options="" />
       <module name="EurekaService" options="" />
       <module name="GatewateService" options="-parameters" />
       <module name="GatewayService" options="" />

@@ -1,4 +1,4 @@
-package ru.feryafox.productservice.configs;
+package ru.feryafox.cartservice.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +21,7 @@ public class SecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/product/{productId}", "/product/shop/{shopId}").permitAll()
-                        .requestMatchers("/product/{productId}/add_to_cart").hasRole("BUYER")
-                        .requestMatchers("/intern/product/**").permitAll()
-                        .requestMatchers("/product/**").hasRole("SELLER")
+                        .requestMatchers("/internal/cart/**").permitAll()
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 

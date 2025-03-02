@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/ProductService/ProductService.iml" filepath="$PROJECT_DIR$/ProductService/ProductService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ShopService/ShopService.iml" filepath="$PROJECT_DIR$/ShopService/ShopService.iml" />
       <module fileurl="file://$PROJECT_DIR$/YaEShop.iml" filepath="$PROJECT_DIR$/YaEShop.iml" />
     </modules>
   </component>
