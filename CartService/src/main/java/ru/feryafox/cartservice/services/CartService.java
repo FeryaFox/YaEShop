@@ -93,4 +93,14 @@ public class CartService {
         existingItem.get().setQuantity(patchCartRequest.getQuantity());
         cartRepository.save(cart);
     }
+
+    public void deleteProductFromCart(String productId, String userId) {
+        var cart = baseService.getCartOrNullByUserId(userId);
+
+        if (cart == null) throw new NoCartException(userId);
+
+        cart.getItems().removeIf(item -> item.getProductId().equals(productId));
+
+        cartRepository.save(cart);
+    }
 }

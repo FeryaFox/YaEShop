@@ -32,4 +32,13 @@ public class CartController {
         cartService.patchCart(productId, userDetails.getUsername(), patchCartRequest);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("{productId}")
+    public ResponseEntity<?> deleteProduct(
+            @PathVariable("productId") String productId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        cartService.deleteProductFromCart(productId, userDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
