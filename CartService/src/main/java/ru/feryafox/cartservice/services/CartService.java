@@ -2,8 +2,10 @@ package ru.feryafox.cartservice.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.feryafox.cartservice.entities.Cart;
 import ru.feryafox.cartservice.entities.CartItem;
+import ru.feryafox.cartservice.exceptions.NoCartException;
+import ru.feryafox.cartservice.exceptions.ProductInTheCartIsNotExistException;
+import ru.feryafox.cartservice.models.requests.PatchCartRequest;
 import ru.feryafox.cartservice.models.responses.CartInfoResponse;
 import ru.feryafox.cartservice.repositories.CartRepository;
 import ru.feryafox.cartservice.repositories.ProductRepository;
@@ -22,8 +24,6 @@ public class CartService {
 
     public void addToCart(String userId, int quantity, AddToCartRequest request) {
         var cart = baseService.getOrCreateCartByUserId(userId);
-
-        System.out.println(cart.getItems());
 
         var existingItem = cart.getItems().stream()
                 .filter(item -> item.getProductId().equals(request.getProductId()))
@@ -75,5 +75,22 @@ public class CartService {
                 .cartPrice(cartTotalPrice)
                 .cartItems(new HashSet<>(productsResponse))
                 .build();
+    }
+
+    public void patchCart(String productId, String userId, PatchCartRequest patchCartRequest) {
+        var cart = baseService.getCartOrNullByUserId(userId);
+
+        if (cart == null) throw new NoCartException(userId);
+
+        var existingItem = cart.getItems().stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst();
+
+        if (existingItem.isEmpty()) {
+            throw new ProductInTheCartIsNotExistException(productId, userId);
+        }
+
+        existingItem.get().setQuantity(patchCartRequest.getQuantity());
+        cartRepository.save(cart);
     }
 }
