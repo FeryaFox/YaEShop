@@ -13,4 +13,8 @@ public class BaseService {
     public Cart getOrCreateCartByUserId(String userId) {
         return cartRepository.findByUserId(userId).orElse(Cart.builder().userId(userId).build());
     }
+
+    public Cart getCartOrNullByUserId(String userId) {
+        return cartRepository.findByUserId(userId).orElse(null);
+    }
 }

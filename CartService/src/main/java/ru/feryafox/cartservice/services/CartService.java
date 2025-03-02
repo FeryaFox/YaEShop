@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.feryafox.cartservice.entities.Cart;
 import ru.feryafox.cartservice.entities.CartItem;
+import ru.feryafox.cartservice.models.responses.CartInfoResponse;
 import ru.feryafox.cartservice.repositories.CartRepository;
 import ru.feryafox.cartservice.repositories.ProductRepository;
 import ru.feryafox.models.internal.requests.AddToCartRequest;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,5 +41,39 @@ public class CartService {
         productRepository.save(product.get());
 
         cartRepository.save(cart);
+    }
+
+    public CartInfoResponse getCartInfo(String userId) {
+        var cart = baseService.getCartOrNullByUserId(userId);
+
+        if (cart == null) {
+            return null;
+        }
+
+        var productIds = cart.getItems().stream()
+                .map(CartItem::getProductId)
+                .collect(Collectors.toList());
+        var productsInCart = productRepository.findAllById(productIds);
+
+        var productsResponse = productsInCart.stream()
+                .map(product -> {
+                    int quantity = cart.getItems().stream()
+                            .filter(item -> item.getProductId().equals(product.getId()))
+                            .map(CartItem::getQuantity)
+                            .findFirst()
+                            .orElse(0);
+
+                    return CartInfoResponse.CartItemResponse.from(product, quantity);
+                })
+                .toList();
+
+        double cartTotalPrice = productsResponse.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+
+        return CartInfoResponse.builder()
+                .cartPrice(cartTotalPrice)
+                .cartItems(new HashSet<>(productsResponse))
+                .build();
     }
 }
