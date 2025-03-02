@@ -65,6 +65,11 @@ spring:
             - Path=/internal/cart/**
           filters:
             - name: InternalFilter
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/order/**
 eureka:
   client:
     serviceUrl:

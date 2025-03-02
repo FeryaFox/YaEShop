@@ -6,3 +6,9 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_sh
 
 SELECT 'CREATE DATABASE yet_another_e_shop_product'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_product')\gexec
+
+SELECT 'CREATE DATABASE yet_another_e_shop_order'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_order')\gexec
+
+SELECT 'CREATE DATABASE yet_another_e_shop_notification'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_notification')\gexec

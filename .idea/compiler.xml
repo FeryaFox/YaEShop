@@ -13,6 +13,8 @@
         <module name="AuthService" />
         <module name="ShopService" />
         <module name="CartService" />
+        <module name="NotificationService" />
+        <module name="OrderService" />
         <module name="ReviewService" />
         <module name="GatewayService" />
       </profile>
@@ -29,6 +31,8 @@
       <module name="EurekaService" options="" />
       <module name="GatewateService" options="-parameters" />
       <module name="GatewayService" options="" />
+      <module name="NotificationService" options="" />
+      <module name="OrderService" options="" />
       <module name="ProductService" options="" />
       <module name="ReviewService" options="" />
       <module name="ShopService" options="" />
