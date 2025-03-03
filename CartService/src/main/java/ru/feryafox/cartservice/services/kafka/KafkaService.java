@@ -20,15 +20,16 @@ public class KafkaService {
                 .userId(cart.getUserId())
                 .orderStatus(OrderEvent.OrderStatus.CREATED);
 
-        System.out.println(cart.getItems());
-
         var products = cart.getItems().stream()
                 .map(CartItem::toProductItem)
                 .collect(Collectors.toSet());
 
-        System.out.println(products);
+        double totalPrice = products.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
 
         eventBuilder.productItems(products);
+        eventBuilder.totalPrice(totalPrice);
 
         kafkaProducerService.sendCreateOrder(eventBuilder.build());
     }

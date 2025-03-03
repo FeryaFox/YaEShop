@@ -18,6 +18,7 @@ public class OrderEvent implements BaseKafkaModel{
     private String userId;
     private Set<ProductItem> productItems;
     private OrderStatus orderStatus;
+    private double totalPrice;
 
     @Data
     @AllArgsConstructor
@@ -26,6 +27,8 @@ public class OrderEvent implements BaseKafkaModel{
     public static class ProductItem {
         private String productId;
         private int quantity;
+        private double price;
+        private String shopId;
     }
 
     public enum OrderStatus {

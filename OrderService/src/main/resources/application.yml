@@ -26,6 +26,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: ru.feryafox.kafka.deserializer.CustomKafkaDeserializer
       properties:
+        event.class.OrderEvent: ru.feryafox.kafka.models.OrderEvent
         spring.json.trusted.packages: "*"
       group-id: order-service-group
 

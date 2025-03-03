@@ -20,7 +20,7 @@ public class CartController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         var response = cartService.getCartInfo(userDetails.getUsername());
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("{productId}")

@@ -34,13 +34,11 @@ public class CartService {
         if (existingItem.isPresent()) {
             existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
         } else {
-            cart.getItems().add(new CartItem(request.getProductId(), quantity));
-        }
+            var product = productRepository.findById(request.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // TODO сделать проверку, что если нету продукта, то сделать синхронный запрос
-        var product = productRepository.findById(request.getProductId());
-        product.get().setPrice(BigDecimal.valueOf(request.getPrice()));
-        productRepository.save(product.get());
+            cart.getItems().add(new CartItem(request.getProductId(), quantity, product.getPrice(), product.getShopId()));
+        }
 
         cartRepository.save(cart);
     }
