@@ -70,6 +70,13 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/order/**
+
+        - id: internal-order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/internal/order/**
+          filters:
+            - name: InternalFilter
 eureka:
   client:
     serviceUrl:

@@ -49,4 +49,12 @@ public class CartController {
         cartService.clearCart(userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PostMapping("create_order")
+    public ResponseEntity<?> createOrder(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        cartService.creteOrder(userDetails.getUsername());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

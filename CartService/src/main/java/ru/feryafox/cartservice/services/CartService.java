@@ -9,6 +9,7 @@ import ru.feryafox.cartservice.models.requests.PatchCartRequest;
 import ru.feryafox.cartservice.models.responses.CartInfoResponse;
 import ru.feryafox.cartservice.repositories.CartRepository;
 import ru.feryafox.cartservice.repositories.ProductRepository;
+import ru.feryafox.cartservice.services.kafka.KafkaService;
 import ru.feryafox.models.internal.requests.AddToCartRequest;
 
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ public class CartService {
     private final BaseService baseService;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final KafkaService kafkaService;
 
     public void addToCart(String userId, int quantity, AddToCartRequest request) {
         var cart = baseService.getOrCreateCartByUserId(userId);
@@ -109,5 +111,15 @@ public class CartService {
         if (cart == null) throw new NoCartException(userId);
         cart.getItems().clear();
         cartRepository.save(cart);
+    }
+
+    public void creteOrder(String userId) {
+        var cart = baseService.getCartOrNullByUserId(userId);
+
+        if (cart == null) throw new NoCartException(userId);
+
+        kafkaService.sendOrderEvent(cart);
+
+        clearCart(userId);
     }
 }
