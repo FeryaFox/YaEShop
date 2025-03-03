@@ -22,6 +22,7 @@
         <module>CartService</module>
         <module>OrderService</module>
         <module>NotificationService</module>
+        <module>PaymentService</module>
     </modules>
 
     <properties>

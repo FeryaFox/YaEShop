@@ -12,3 +12,6 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_or
 
 SELECT 'CREATE DATABASE yet_another_e_shop_notification'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_notification')\gexec
+
+SELECT 'CREATE DATABASE yet_another_e_shop_payment'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'yet_another_e_shop_payment')\gexec
