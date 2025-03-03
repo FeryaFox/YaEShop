@@ -4,6 +4,7 @@ CREATE TABLE orders
     user_id      UUID                        NOT NULL,
     order_status VARCHAR(255)                NOT NULL,
     created_at   TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    total_price  DECIMAL                     NOT NULL,
     CONSTRAINT pk_orders PRIMARY KEY (order_id)
 );
 
