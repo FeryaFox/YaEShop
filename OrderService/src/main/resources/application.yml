@@ -27,6 +27,7 @@ spring:
       value-deserializer: ru.feryafox.kafka.deserializer.CustomKafkaDeserializer
       properties:
         event.class.OrderEvent: ru.feryafox.kafka.models.OrderEvent
+        event.class.PaymentResponseEvent: ru.feryafox.kafka.models.PaymentResponseEvent
         spring.json.trusted.packages: "*"
       group-id: order-service-group
 

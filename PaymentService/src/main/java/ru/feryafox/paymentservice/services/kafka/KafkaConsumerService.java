@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.feryafox.kafka.models.PaymentRequestEvent;
+import ru.feryafox.kafka.models.PaymentResponseEvent;
 import ru.feryafox.paymentservice.services.PaymentService;
 
 @Service

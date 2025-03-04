@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.feryafox.kafka.models.OrderEvent;
+import ru.feryafox.kafka.models.PaymentResponseEvent;
 import ru.feryafox.orderservice.entities.Order;
 import ru.feryafox.orderservice.entities.ProductItem;
 import ru.feryafox.orderservice.exceptions.IncorrectStatusChangeException;
@@ -57,8 +58,18 @@ public class OrderService {
                 kafkaService.createPaymentRequest(order);
 
                 break;
+            case PAID:
+                if (!order.getOrderStatus().equals(Order.OrderStatus.PENDING_PAYMENT)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                order.setOrderStatus(Order.OrderStatus.PAID);
+
+                break;
         }
 
         orderRepository.save(order);
+    }
+
+    @Transactional
+    public void processPayment(PaymentResponseEvent paymentResponseEvent) {
+        changeStatus(paymentResponseEvent.getOrderId(), Order.OrderStatus.PAID);
     }
 }

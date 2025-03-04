@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.feryafox.kafka.models.OrderEvent;
+import ru.feryafox.kafka.models.PaymentResponseEvent;
 import ru.feryafox.orderservice.services.OrderService;
 
 @Service
@@ -18,6 +19,17 @@ public class KafkaConsumerService {
 
         if (event instanceof OrderEvent orderEvent) {
             orderService.createOrder(orderEvent);
+        } else {
+            System.out.println("Пришло что-то не то");
+        }
+    }
+
+    @KafkaListener(topics = "payment-response-topic")
+    public void listenPaymentResponse(ConsumerRecord<String, Object> record) {
+        Object event = record.value();
+
+        if (event instanceof PaymentResponseEvent paymentResponseEvent) {
+            orderService.processPayment(paymentResponseEvent);
         } else {
             System.out.println("Пришло что-то не то");
         }
