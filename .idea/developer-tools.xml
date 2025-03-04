@@ -5,8 +5,8 @@
       <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="7a8f93f6-bff3-4da8-9e44-44e282d27929" name="Workbench">
         <properties>
           <property key="headerText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;alg&quot; : &quot;HS512&quot;&#13;&#10;}" />
-          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot; : &quot;6bc37834-1967-4a8a-8eb8-659aeec205a6&quot;,&#13;&#10;  &quot;roles&quot; : [&#13;&#10;    &quot;ROLE_SELLER&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot; : 1740322000,&#13;&#10;  &quot;exp&quot; : 1740325600&#13;&#10;}" />
-          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2YmMzNzgzNC0xOTY3LTRhOGEtOGViOC02NTlhZWVjMjA1YTYiLCJyb2xlcyI6WyJST0xFX1NFTExFUiJdLCJpYXQiOjE3NDAzMjIwMDAsImV4cCI6MTc0MDMyNTYwMH0.ll8A5nAyBMgJNSkDFi_s0RAa-ayZ7jOfokqhVvKzc-uCKkw6ovjErY2ikrW3kssWraCQR5p4ymS5_c5uhX-Bzg" />
+          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot; : &quot;8439f7bb-6fe2-47d1-9471-bb13d1e122bf&quot;,&#13;&#10;  &quot;roles&quot; : [&#13;&#10;    &quot;ROLE_ADMIN&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot; : 1741106904,&#13;&#10;  &quot;exp&quot; : 1741110504&#13;&#10;}" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI4NDM5ZjdiYi02ZmUyLTQ3ZDEtOTQ3MS1iYjEzZDFlMTIyYmYiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlhdCI6MTc0MTEwNjkwNCwiZXhwIjoxNzQxMTEwNTA0fQ.XU1KMZbfkwq2uHI4xChr4qxXtGeb2EwMuhzjI0WswTCvQLxB7rjIH-pq8ByEtx1FhTY4orsyb5pTQYZHwBJsbg&#10;" />
           <property key="algorithm" type="CONFIGURATION" value="dev.turingcomplete.intellijdevelopertoolsplugin._internal.tool.ui.converter.JwtEncoderDecoder$SignatureAlgorithm|HMAC512" />
         </properties>
       </developerToolConfiguration>
