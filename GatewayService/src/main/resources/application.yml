@@ -77,6 +77,11 @@ spring:
             - Path=/internal/order/**
           filters:
             - name: InternalFilter
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payment/**
 eureka:
   client:
     serviceUrl:

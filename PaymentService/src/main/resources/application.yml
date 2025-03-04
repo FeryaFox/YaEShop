@@ -27,7 +27,7 @@ spring:
       properties:
         event.class.PaymentRequestEvent: ru.feryafox.kafka.models.PaymentRequestEvent
         spring.json.trusted.packages: "*"
-      group-id: order-service-group
+      group-id: payment-service-group
 
     bootstrap-servers: "10.242.56.8:9092"
 
