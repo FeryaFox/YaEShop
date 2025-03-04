@@ -29,13 +29,19 @@ public class AwaitingPaymentsResponse {
        private String paymentId;
        private String orderId;
        private double totalPrice;
+       private String paymentLink;
 
        public static AwaitingPayment from(Payment payment) {
            return AwaitingPayment.builder()
                    .paymentId(String.valueOf(payment.getId()))
                    .orderId(payment.getOrderId())
                    .totalPrice(payment.getTotalPrice().doubleValue())
+                   .paymentLink(generatePaymentLink(String.valueOf(payment.getId())))
                    .build();
        }
+
+        private static String generatePaymentLink(String paymentId) {
+            return "http://127.0.0.1:8080/payment/pay/" + paymentId;
+        }
     }
 }
