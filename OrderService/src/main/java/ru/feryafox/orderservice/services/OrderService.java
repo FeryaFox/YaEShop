@@ -8,6 +8,8 @@ import ru.feryafox.kafka.models.PaymentResponseEvent;
 import ru.feryafox.orderservice.entities.Order;
 import ru.feryafox.orderservice.entities.ProductItem;
 import ru.feryafox.orderservice.exceptions.IncorrectStatusChangeException;
+import ru.feryafox.orderservice.models.requests.ChangeStatusRequest;
+import ru.feryafox.orderservice.models.responses.UserOrderInfoResponse;
 import ru.feryafox.orderservice.repsositories.OrderRepository;
 import ru.feryafox.orderservice.repsositories.ProductItemRepository;
 import ru.feryafox.orderservice.services.kafka.KafkaService;
@@ -63,6 +65,26 @@ public class OrderService {
                 order.setOrderStatus(Order.OrderStatus.PAID);
 
                 break;
+
+            case PROCESSING:
+                if (!order.getOrderStatus().equals(Order.OrderStatus.PAID)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                order.setOrderStatus(Order.OrderStatus.PROCESSING);
+                break;
+
+            case SHIPPED:
+                if (!order.getOrderStatus().equals(Order.OrderStatus.PROCESSING)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                order.setOrderStatus(Order.OrderStatus.SHIPPED);
+                break;
+
+            case DELIVERED:
+                if (!order.getOrderStatus().equals(Order.OrderStatus.SHIPPED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                order.setOrderStatus(Order.OrderStatus.DELIVERED);
+                break;
+
+            case COMPLETED:
+                if (!order.getOrderStatus().equals(Order.OrderStatus.DELIVERED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                order.setOrderStatus(Order.OrderStatus.COMPLETED);
+                break;
         }
 
         orderRepository.save(order);
@@ -71,5 +93,32 @@ public class OrderService {
     @Transactional
     public void processPayment(PaymentResponseEvent paymentResponseEvent) {
         changeStatus(paymentResponseEvent.getOrderId(), Order.OrderStatus.PAID);
+    }
+
+    @Transactional
+    public void changeOrderStatus(String orderId, ChangeStatusRequest changeStatusRequest) {
+        switch (changeStatusRequest.getNewStatus()) {
+            case PROCESSING -> changeStatus(orderId, Order.OrderStatus.PROCESSING);
+            case SHIPPED -> changeStatus(orderId, Order.OrderStatus.SHIPPED);
+            case DELIVERED -> changeStatus(orderId, Order.OrderStatus.DELIVERED);
+            case COMPLETED -> changeStatus(orderId, Order.OrderStatus.COMPLETED);
+        }
+    }
+
+    public UserOrderInfoResponse getUserOrderInfo(String userId) {
+        var orders = orderRepository.findByUserIdAndOrderStatusIn(UUID.fromString(userId), Set.of(
+                Order.OrderStatus.PENDING_PAYMENT,
+                Order.OrderStatus.PAID,
+                Order.OrderStatus.PROCESSING,
+                Order.OrderStatus.SHIPPED,
+                Order.OrderStatus.DELIVERED
+        ));
+
+        return UserOrderInfoResponse.fromOrders(orders);
+    }
+
+    public UserOrderInfoResponse getFinishedUserOrderInfo(String userId) {
+        var orders = orderRepository.findByUserIdAndOrderStatusIn(UUID.fromString(userId), Set.of(Order.OrderStatus.COMPLETED));
+        return UserOrderInfoResponse.fromOrders(orders);
     }
 }

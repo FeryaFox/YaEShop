@@ -21,8 +21,8 @@ public class SecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/cart/", "/cart/{productId}").hasRole("BUYER")
-                        .requestMatchers("/internal/cart/**").permitAll()
+                        .requestMatchers("/order/buyer/**").hasRole("BUYER")
+                        .requestMatchers("/order/delivery/**").hasRole("DELIVERY")
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
