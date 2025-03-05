@@ -2,6 +2,7 @@
 <project version="4">
   <component name="DiffGenerationConfig" isInitGenerateDdl="true">
     <option name="initGenerateDdl" value="true" />
-    <option name="sourceModelValue" value="PaymentService:PaymentService" />
+    <option name="sourceModelValue" value="NotificationService:NotificationService" />
+    <option name="targetDbValue" value="c55cfbf8-9f76-4560-8273-cff62c1a2606" />
   </component>
 </project>

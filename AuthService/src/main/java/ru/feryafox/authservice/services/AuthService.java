@@ -22,6 +22,7 @@ import ru.feryafox.authservice.models.responses.AuthResponse;
 import ru.feryafox.authservice.repositories.RefreshTokenRepository;
 import ru.feryafox.authservice.repositories.RoleRepository;
 import ru.feryafox.authservice.repositories.UserRepository;
+import ru.feryafox.authservice.services.kafka.KafkaService;
 import ru.feryafox.authservice.utils.IpAddressUtils;
 import ru.feryafox.jwt.JwtUtils;
 
@@ -38,6 +39,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final KafkaService kafkaService;
 
     @Transactional
     public void register(RegisterRequest registerRequest) {
@@ -56,7 +58,8 @@ public class AuthService {
 
         user.getRoles().add(role);
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+        kafkaService.sendRegisterUser(user);
     }
 
     @Transactional

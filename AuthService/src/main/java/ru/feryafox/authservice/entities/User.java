@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.feryafox.kafka.models.UserEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,5 +106,19 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public UserEvent toUserEvent(UserEvent.Status status) {
+        return UserEvent.builder()
+                .id(String.valueOf(this.getId()))
+                .phoneNumber(this.getPhoneNumber())
+                .firstName(this.getFirstName())
+                .surname(this.getSurname())
+                .middleName(this.getMiddleName())
+                .roles(this.getRoles().stream()
+                        .map(Role::getRoleName)
+                        .collect(Collectors.toSet()))
+                .status(status)
+                .build();
     }
 }
