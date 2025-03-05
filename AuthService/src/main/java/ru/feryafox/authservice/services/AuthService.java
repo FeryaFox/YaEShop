@@ -17,6 +17,7 @@ import ru.feryafox.authservice.exceptions.token.RefreshTokenIsNotExistException;
 import ru.feryafox.authservice.exceptions.user.UserIsExistException;
 import ru.feryafox.authservice.models.requests.LoginRequest;
 import ru.feryafox.authservice.models.requests.RegisterRequest;
+import ru.feryafox.authservice.models.requests.RegisterRequestDelivery;
 import ru.feryafox.authservice.models.responses.AuthResponse;
 import ru.feryafox.authservice.repositories.RefreshTokenRepository;
 import ru.feryafox.authservice.repositories.RoleRepository;
@@ -126,5 +127,25 @@ public class AuthService {
         refreshTokenEntity.setIsLogout(true);
 
         refreshTokenRepository.save(refreshTokenEntity);
+    }
+
+    @Transactional
+    public void registerDelivery(RegisterRequestDelivery registerRequestDelivery) {
+        if (userRepository.existsByPhoneNumber(registerRequestDelivery.getPhoneNumber())) {
+            throw new UserIsExistException(registerRequestDelivery.getPhoneNumber());
+        }
+
+        User user = new User();
+        user.setPhoneNumber(registerRequestDelivery.getPhoneNumber());
+        user.setFirstName(registerRequestDelivery.getFirstName());
+        user.setSurname(registerRequestDelivery.getSurname());
+        user.setMiddleName(registerRequestDelivery.getMiddleName());
+        user.setPasswordHash(passwordEncoder.encode(registerRequestDelivery.getPassword()));
+
+        Role role = roleRepository.findByName(Role.RoleName.ROLE_DELIVERY).get();
+
+        user.getRoles().add(role);
+
+        userRepository.save(user);
     }
 }

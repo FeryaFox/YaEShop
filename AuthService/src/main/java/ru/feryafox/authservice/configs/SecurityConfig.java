@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/profile/buyer/**").hasRole("BUYER")
                         .requestMatchers("/profile/seller/**").hasRole("SELLER")
                         .requestMatchers("/intern/auth/profile/**").permitAll()
+                        .requestMatchers("/admin/auth/**").hasRole("ADMIN")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
