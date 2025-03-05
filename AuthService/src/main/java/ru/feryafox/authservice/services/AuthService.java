@@ -25,6 +25,7 @@ import ru.feryafox.authservice.repositories.UserRepository;
 import ru.feryafox.authservice.services.kafka.KafkaService;
 import ru.feryafox.authservice.utils.IpAddressUtils;
 import ru.feryafox.jwt.JwtUtils;
+import ru.feryafox.kafka.NotificationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final RefreshTokenRepository refreshTokenRepository;
     private final KafkaService kafkaService;
+    private final NotificationService notificationService;
 
     @Transactional
     public void register(RegisterRequest registerRequest) {
@@ -60,6 +62,7 @@ public class AuthService {
 
         user = userRepository.save(user);
         kafkaService.sendRegisterUser(user);
+        notificationService.sendNotification(String.valueOf(user.getId()), "Спасибо за регистрацию)");
     }
 
     @Transactional

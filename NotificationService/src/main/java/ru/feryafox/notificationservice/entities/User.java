@@ -14,7 +14,6 @@ import java.util.UUID;
 @Table(name = "users")
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
@@ -37,6 +36,7 @@ public class User {
     private String middleName;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private Set<Notification> notifications = new LinkedHashSet<>();
 
     @Override
@@ -58,6 +58,10 @@ public class User {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" +
-                "id = " + id + ")";
+                "id = " + id + ", " +
+                "surname = " + surname + ", " +
+                "phoneNumber = " + phoneNumber + ", " +
+                "firstName = " + firstName + ", " +
+                "middleName = " + middleName + ")";
     }
 }

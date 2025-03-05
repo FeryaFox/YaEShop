@@ -1,4 +1,4 @@
-package ru.feryafox.notificationservice.kafka;
+package ru.feryafox.notificationservice.servicies.kafka;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
