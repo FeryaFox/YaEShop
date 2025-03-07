@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProductRepository extends MongoRepository<Product, String> {
 
     List<Product> findAllByShop_Id(String shopId, Pageable pageable);
+    List<Product> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
 }

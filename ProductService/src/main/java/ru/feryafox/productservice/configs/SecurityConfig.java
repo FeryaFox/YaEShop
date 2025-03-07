@@ -21,7 +21,8 @@ public class SecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/product/{productId}", "/product/shop/{shopId}").permitAll()
+                        .requestMatchers("/product/{productId}", "/product/shop/{shopId}", "/product/search").permitAll()
+
                         .requestMatchers("/product/{productId}/add_to_cart").hasRole("BUYER")
                         .requestMatchers("/intern/product/**").permitAll()
                         .requestMatchers("/product/**").hasRole("SELLER")

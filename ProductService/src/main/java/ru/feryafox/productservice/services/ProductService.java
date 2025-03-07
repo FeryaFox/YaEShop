@@ -171,4 +171,12 @@ public class ProductService {
 
         feignService.addToCart(userId, quantity, request);
     }
+
+    public List<ProductInfoResponse> searchProductsByName(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<Product> products = productRepository.findAllByNameContainingIgnoreCase(name, pageable);
+        return products.stream()
+                .map(ProductInfoResponse::from)
+                .toList();
+    }
 }

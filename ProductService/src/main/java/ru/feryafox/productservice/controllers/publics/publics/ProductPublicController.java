@@ -28,4 +28,14 @@ public class ProductPublicController {
         var response = productService.getProductInfoFromShop(shopId, page, size);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("search")
+    public ResponseEntity<?> searchProductsByName(
+            @RequestParam("name") String name,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        var response = productService.searchProductsByName(name, page, size);
+        return ResponseEntity.ok(response);
+    }
 }
