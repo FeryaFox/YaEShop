@@ -1,8 +1,12 @@
 package ru.feryafox.authservice.exceptions.user;
 
-public class UserIsNotExistException extends RuntimeException {
-    private static final String MESSAGE_TEMPLATE = "Пользователь с данным телефоном %s не существует";
-    public UserIsNotExistException(String phone) {
-      super(String.format(MESSAGE_TEMPLATE, phone));
+import lombok.extern.slf4j.Slf4j;
+import ru.feryafox.authservice.exceptions.AuthServiceException;
+
+@Slf4j
+public class UserIsNotExistException extends AuthServiceException {
+    public UserIsNotExistException(String phoneNumber) {
+        super("Пользователь с номером " + phoneNumber + " не найден");
+        log.error("Ошибка: пользователь с номером {} не найден", phoneNumber);
     }
 }

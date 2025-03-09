@@ -28,7 +28,6 @@
 		<dependency>
 			<groupId>ru.feryafox</groupId>
 			<artifactId>shared-library</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>

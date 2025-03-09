@@ -1,5 +1,6 @@
 package ru.feryafox.gatewayservice.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Component
+@Slf4j
 public class InternalFilter extends AbstractGatewayFilterFactory<InternalFilter.Config> {
 
     @Value("${internal.api.key}")
@@ -23,20 +25,32 @@ public class InternalFilter extends AbstractGatewayFilterFactory<InternalFilter.
     }
 
     public static class Config {
-
     }
 
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
+            String requestPath = request.getURI().getPath();
 
-            if (request.getURI().getPath().startsWith("/internal/")) {
+            if (requestPath.startsWith("/internal/")) {
+                log.info("Запрос к внутреннему API: {}", requestPath);
+
                 List<String> apiKeys = request.getHeaders().get("X-Internal-API-Key");
-                if (apiKeys == null || apiKeys.isEmpty() || !internalApiKey.equals(apiKeys.get(0))) {
+                if (apiKeys == null || apiKeys.isEmpty()) {
+                    log.warn("Отсутствует заголовок X-Internal-API-Key. Доступ запрещен.");
                     exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                     return exchange.getResponse().setComplete();
                 }
+
+                String providedApiKey = apiKeys.get(0);
+                if (!internalApiKey.equals(providedApiKey)) {
+                    log.warn("Неверный API-ключ. Доступ запрещен.");
+                    exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                    return exchange.getResponse().setComplete();
+                }
+
+                log.info("Доступ к {} разрешен", requestPath);
             }
 
             return chain.filter(exchange);
