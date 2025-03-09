@@ -54,7 +54,7 @@ public class CartController {
     public ResponseEntity<?> createOrder(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        cartService.creteOrder(userDetails.getUsername());
+        cartService.createOrder(userDetails.getUsername());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

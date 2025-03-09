@@ -2,6 +2,7 @@ package ru.feryafox.authservice.services;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -45,7 +47,10 @@ public class AuthService {
 
     @Transactional
     public void register(RegisterRequest registerRequest) {
+        log.info("Начало регистрации пользователя с номером: {}", registerRequest.getPhoneNumber());
+
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
+            log.warn("Ошибка регистрации: пользователь с номером {} уже существует", registerRequest.getPhoneNumber());
             throw new UserIsExistException(registerRequest.getPhoneNumber());
         }
 
@@ -56,17 +61,24 @@ public class AuthService {
         user.setMiddleName(registerRequest.getMiddleName());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
 
-        Role role = roleRepository.findByName(registerRequest.getRole().equals("SELLER") ? Role.RoleName.ROLE_SELLER : Role.RoleName.ROLE_BUYER).get();
+        Role role = roleRepository.findByName(registerRequest.getRole().equals("SELLER") ? Role.RoleName.ROLE_SELLER : Role.RoleName.ROLE_BUYER)
+                .orElseThrow(() -> {
+                    log.error("Роль {} не найдена в базе данных", registerRequest.getRole());
+                    return new RuntimeException("Роль не найдена");
+                });
 
         user.getRoles().add(role);
-
         user = userRepository.save(user);
+
         kafkaService.sendRegisterUser(user);
         notificationService.sendNotification(String.valueOf(user.getId()), "Спасибо за регистрацию)");
+
+        log.info("Регистрация пользователя {} завершена успешно", registerRequest.getPhoneNumber());
     }
 
     @Transactional
     public AuthResponse login(LoginRequest loginRequest, HttpServletRequest request) {
+        log.info("Попытка входа в систему: {}", loginRequest.getPhoneNumber());
         User user;
 
         try {
@@ -76,12 +88,12 @@ public class AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             user = (User) authentication.getPrincipal();
+            log.info("Вход выполнен успешно: {}", loginRequest.getPhoneNumber());
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            log.error("Ошибка аутентификации пользователя {}: {}", loginRequest.getPhoneNumber(), e.getMessage());
             throw e;
         }
 
-        // Получение списка ролей пользователя
         List<String> roles = user.getRoles().stream()
                 .map(role -> role.getName().name())
                 .collect(Collectors.toList());
@@ -96,21 +108,21 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
 
-        String accessToken = jwtUtils.generateToken(user.getId(), roles); // Передаем роли
+        String accessToken = jwtUtils.generateToken(user.getId(), roles);
 
+        log.info("Токены успешно созданы для пользователя {}", loginRequest.getPhoneNumber());
         return new AuthResponse(accessToken, refreshTokenObj.getRefreshToken());
     }
 
     @Transactional
     public AuthResponse refreshToken(String refreshToken) {
+        log.info("Обновление токена: {}", refreshToken);
         jwtUtils.validateToken(refreshToken);
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByTokenAndIsLogoutFalse(refreshToken)
-                .orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
+                .orElseThrow(() -> new RefreshTokenIsNotExistException(refreshToken));
 
         User tokenOwner = refreshTokenEntity.getUser();
-
-        // Получение списка ролей пользователя
         List<String> roles = tokenOwner.getRoles().stream()
                 .map(role -> role.getName().name())
                 .collect(Collectors.toList());
@@ -122,22 +134,29 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshTokenEntity);
 
-        String accessToken = jwtUtils.generateToken(tokenOwner.getId(), roles); // Передаем роли
-
-        return new AuthResponse(accessToken, newRefreshToken.getRefreshToken());
+        log.info("Токен обновлен успешно: {}", refreshToken);
+        return new AuthResponse(jwtUtils.generateToken(tokenOwner.getId(), roles), newRefreshToken.getRefreshToken());
     }
+
     @Transactional
     public void logout(String refreshToken) {
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken).orElseThrow(() -> new RefreshTokenIsNotExistException(String.format("Рефреш токен %s нет в бд", refreshToken)));
+        log.info("Попытка выхода пользователя с токеном {}", refreshToken);
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new RefreshTokenIsNotExistException(refreshToken));
 
         refreshTokenEntity.setIsLogout(true);
-
         refreshTokenRepository.save(refreshTokenEntity);
+
+        log.info("Пользователь успешно вышел из системы");
     }
 
     @Transactional
     public void registerDelivery(RegisterRequestDelivery registerRequestDelivery) {
+        log.info("Регистрация доставщика с номером: {}", registerRequestDelivery.getPhoneNumber());
+
         if (userRepository.existsByPhoneNumber(registerRequestDelivery.getPhoneNumber())) {
+            log.warn("Ошибка: доставщик с номером {} уже зарегистрирован", registerRequestDelivery.getPhoneNumber());
             throw new UserIsExistException(registerRequestDelivery.getPhoneNumber());
         }
 
@@ -148,10 +167,15 @@ public class AuthService {
         user.setMiddleName(registerRequestDelivery.getMiddleName());
         user.setPasswordHash(passwordEncoder.encode(registerRequestDelivery.getPassword()));
 
-        Role role = roleRepository.findByName(Role.RoleName.ROLE_DELIVERY).get();
+        Role role = roleRepository.findByName(Role.RoleName.ROLE_DELIVERY)
+                .orElseThrow(() -> {
+                    log.error("Ошибка: роль 'DELIVERY' не найдена");
+                    return new RuntimeException("Роль не найдена");
+                });
 
         user.getRoles().add(role);
-
         userRepository.save(user);
+
+        log.info("Регистрация доставщика {} завершена успешно", registerRequestDelivery.getPhoneNumber());
     }
 }

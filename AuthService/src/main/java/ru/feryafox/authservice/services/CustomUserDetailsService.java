@@ -1,6 +1,7 @@
 package ru.feryafox.authservice.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,19 +12,35 @@ import ru.feryafox.utils.UUIDUtils;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        log.info("Попытка загрузки пользователя с идентификатором: {}", identifier);
+
+        UserDetails userDetails;
+
         if (UUIDUtils.isUUID(identifier)) {
-            return userRepository.findById(UUID.fromString(identifier))
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + identifier));
+            log.info("Идентификатор {} распознан как UUID", identifier);
+            userDetails = userRepository.findById(UUID.fromString(identifier))
+                    .orElseThrow(() -> {
+                        log.warn("Пользователь с ID {} не найден", identifier);
+                        return new UsernameNotFoundException("Пользователь не найден по ID: " + identifier);
+                    });
         } else {
-            return userRepository.findByPhoneNumber(identifier)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found with phone number: " + identifier));
+            log.info("Идентификатор {} распознан как номер телефона", identifier);
+            userDetails = userRepository.findByPhoneNumber(identifier)
+                    .orElseThrow(() -> {
+                        log.warn("Пользователь с номером {} не найден", identifier);
+                        return new UsernameNotFoundException("Пользователь не найден по номеру телефона: " + identifier);
+                    });
         }
+
+        log.info("Пользователь {} успешно загружен", identifier);
+        return userDetails;
     }
 }

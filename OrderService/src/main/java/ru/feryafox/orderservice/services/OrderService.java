@@ -1,6 +1,8 @@
+
 package ru.feryafox.orderservice.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.feryafox.kafka.models.OrderEvent;
@@ -21,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -30,9 +33,21 @@ public class OrderService {
 
     @Transactional
     public void createOrder(OrderEvent orderEvent) {
+        log.info("Создание нового заказа: {}", orderEvent.getOrderId());
+
+        UUID orderId;
+        UUID userId;
+        try {
+            orderId = UUID.fromString(orderEvent.getOrderId());
+            userId = UUID.fromString(orderEvent.getUserId());
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка: Некорректный UUID в событии OrderEvent: {}", orderEvent, e);
+            return;
+        }
+
         Order order = Order.builder()
-                .id(UUID.fromString(orderEvent.getOrderId()))
-                .userId(UUID.fromString(orderEvent.getUserId()))
+                .id(orderId)
+                .userId(userId)
                 .orderStatus(Order.OrderStatus.CREATED)
                 .createdAt(LocalDateTime.now())
                 .totalPrice(BigDecimal.valueOf(orderEvent.getTotalPrice()))
@@ -42,61 +57,70 @@ public class OrderService {
         order.setProductItems(productItems);
 
         orderRepository.save(order);
-
-        System.out.println("Order created: " + orderEvent.getOrderId());
+        log.info("Заказ {} успешно создан для пользователя {}", orderId, userId);
 
         changeStatus(order.getId().toString(), Order.OrderStatus.PENDING_PAYMENT);
     }
 
     @Transactional
     public void changeStatus(String orderId, Order.OrderStatus newStatus) {
-        var order = baseService.getOrderById(UUID.fromString(orderId));
+        log.info("Изменение статуса заказа {} на {}", orderId, newStatus);
 
-        switch (newStatus) {
-            case PENDING_PAYMENT:
-                if (!order.getOrderStatus().equals(Order.OrderStatus.CREATED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
-                order.setOrderStatus(Order.OrderStatus.PENDING_PAYMENT);
-
-                kafkaService.createPaymentRequest(order);
-
-                break;
-            case PAID:
-                if (!order.getOrderStatus().equals(Order.OrderStatus.PENDING_PAYMENT)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
-                order.setOrderStatus(Order.OrderStatus.PAID);
-
-                break;
-
-            case PROCESSING:
-                if (!order.getOrderStatus().equals(Order.OrderStatus.PAID)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
-                order.setOrderStatus(Order.OrderStatus.PROCESSING);
-                break;
-
-            case SHIPPED:
-                if (!order.getOrderStatus().equals(Order.OrderStatus.PROCESSING)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
-                order.setOrderStatus(Order.OrderStatus.SHIPPED);
-                break;
-
-            case DELIVERED:
-                if (!order.getOrderStatus().equals(Order.OrderStatus.SHIPPED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
-                order.setOrderStatus(Order.OrderStatus.DELIVERED);
-                break;
-
-            case COMPLETED:
-                if (!order.getOrderStatus().equals(Order.OrderStatus.DELIVERED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
-                order.setOrderStatus(Order.OrderStatus.COMPLETED);
-                break;
+        UUID orderUuid;
+        try {
+            orderUuid = UUID.fromString(orderId);
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка: Некорректный формат UUID для orderId: {}", orderId, e);
+            return;
         }
 
-        orderRepository.save(order);
+        var order = baseService.getOrderById(orderUuid);
+
+        try {
+            switch (newStatus) {
+                case PENDING_PAYMENT -> {
+                    if (!order.getOrderStatus().equals(Order.OrderStatus.CREATED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                    order.setOrderStatus(Order.OrderStatus.PENDING_PAYMENT);
+                    kafkaService.createPaymentRequest(order);
+                }
+                case PAID -> {
+                    if (!order.getOrderStatus().equals(Order.OrderStatus.PENDING_PAYMENT)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                    order.setOrderStatus(Order.OrderStatus.PAID);
+                }
+                case PROCESSING -> {
+                    if (!order.getOrderStatus().equals(Order.OrderStatus.PAID)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                    order.setOrderStatus(Order.OrderStatus.PROCESSING);
+                }
+                case SHIPPED -> {
+                    if (!order.getOrderStatus().equals(Order.OrderStatus.PROCESSING)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                    order.setOrderStatus(Order.OrderStatus.SHIPPED);
+                }
+                case DELIVERED -> {
+                    if (!order.getOrderStatus().equals(Order.OrderStatus.SHIPPED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                    order.setOrderStatus(Order.OrderStatus.DELIVERED);
+                }
+                case COMPLETED -> {
+                    if (!order.getOrderStatus().equals(Order.OrderStatus.DELIVERED)) throw new IncorrectStatusChangeException(order.getOrderStatus(), newStatus);
+                    order.setOrderStatus(Order.OrderStatus.COMPLETED);
+                }
+            }
+
+            orderRepository.save(order);
+            log.info("Статус заказа {} успешно обновлен на {}", orderId, newStatus);
+        } catch (IncorrectStatusChangeException e) {
+            log.error("Ошибка при изменении статуса заказа {}: {}", orderId, e.getMessage());
+        }
     }
 
     @Transactional
     public void processPayment(PaymentResponseEvent paymentResponseEvent) {
+        log.info("Обработка платежа для заказа {}", paymentResponseEvent.getOrderId());
         changeStatus(paymentResponseEvent.getOrderId(), Order.OrderStatus.PAID);
     }
 
     @Transactional
     public void changeOrderStatus(String orderId, ChangeStatusRequest changeStatusRequest) {
+        log.info("Изменение статуса заказа {} на {}", orderId, changeStatusRequest.getNewStatus());
         switch (changeStatusRequest.getNewStatus()) {
             case PROCESSING -> changeStatus(orderId, Order.OrderStatus.PROCESSING);
             case SHIPPED -> changeStatus(orderId, Order.OrderStatus.SHIPPED);
@@ -106,7 +130,17 @@ public class OrderService {
     }
 
     public UserOrderInfoResponse getUserOrderInfo(String userId) {
-        var orders = orderRepository.findByUserIdAndOrderStatusIn(UUID.fromString(userId), Set.of(
+        log.info("Получение информации о заказах пользователя {}", userId);
+
+        UUID userUuid;
+        try {
+            userUuid = UUID.fromString(userId);
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка: Некорректный UUID пользователя: {}", userId, e);
+            return null;
+        }
+
+        var orders = orderRepository.findByUserIdAndOrderStatusIn(userUuid, Set.of(
                 Order.OrderStatus.PENDING_PAYMENT,
                 Order.OrderStatus.PAID,
                 Order.OrderStatus.PROCESSING,
@@ -118,7 +152,17 @@ public class OrderService {
     }
 
     public UserOrderInfoResponse getFinishedUserOrderInfo(String userId) {
-        var orders = orderRepository.findByUserIdAndOrderStatusIn(UUID.fromString(userId), Set.of(Order.OrderStatus.COMPLETED));
+        log.info("Получение завершенных заказов пользователя {}", userId);
+
+        UUID userUuid;
+        try {
+            userUuid = UUID.fromString(userId);
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка: Некорректный UUID пользователя: {}", userId, e);
+            return null;
+        }
+
+        var orders = orderRepository.findByUserIdAndOrderStatusIn(userUuid, Set.of(Order.OrderStatus.COMPLETED));
         return UserOrderInfoResponse.fromOrders(orders);
     }
 }

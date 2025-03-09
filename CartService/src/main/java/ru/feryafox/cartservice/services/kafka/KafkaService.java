@@ -1,6 +1,7 @@
 package ru.feryafox.cartservice.services.kafka;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.feryafox.cartservice.entities.Cart;
 import ru.feryafox.cartservice.entities.CartItem;
@@ -11,15 +12,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KafkaService {
     private final KafkaProducerService kafkaProducerService;
 
     public void sendOrderEvent(Cart cart) {
-        var eventBuilder = OrderEvent.builder()
-                .orderId(UUID.randomUUID().toString())
-                .userId(cart.getUserId())
-                .orderStatus(OrderEvent.OrderStatus.CREATED);
+        if (cart.getItems().isEmpty()) {
+            log.warn("Попытка создать заказ для пользователя {} с пустой корзиной. Заказ не отправлен.", cart.getUserId());
+            return;
+        }
 
+        String orderId = UUID.randomUUID().toString();
         var products = cart.getItems().stream()
                 .map(CartItem::toProductItem)
                 .collect(Collectors.toSet());
@@ -28,9 +31,21 @@ public class KafkaService {
                 .mapToDouble(item -> item.getPrice() * item.getQuantity())
                 .sum();
 
-        eventBuilder.productItems(products);
-        eventBuilder.totalPrice(totalPrice);
+        var orderEvent = OrderEvent.builder()
+                .orderId(orderId)
+                .userId(cart.getUserId())
+                .orderStatus(OrderEvent.OrderStatus.CREATED)
+                .productItems(products)
+                .totalPrice(totalPrice)
+                .build();
 
-        kafkaProducerService.sendCreateOrder(eventBuilder.build());
+        log.info("Создан заказ {} для пользователя {}. Итоговая сумма: {}. Отправка в Kafka...", orderId, cart.getUserId(), totalPrice);
+
+        try {
+            kafkaProducerService.sendCreateOrder(orderEvent);
+            log.info("Заказ {} успешно отправлен в Kafka.", orderId);
+        } catch (Exception e) {
+            log.error("Ошибка при отправке заказа {} в Kafka: {}", orderId, e.getMessage(), e);
+        }
     }
 }
