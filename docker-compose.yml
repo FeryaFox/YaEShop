@@ -1,46 +1,92 @@
 version: '3.8'
 services:
 
-  postgres:
+  eureka-service:
+    build:
+      context: .
+      dockerfile: EurekaService/Dockerfile
+    container_name: EurekaServiceYaEShop
+    ports:
+    - "8761:8761"
+    networks:
+      - yaeshop-network
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: GatewayService/Dockerfile
+    container_name: GatewayServiceYaEShop
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-service
+    networks:
+      - yaeshop-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    container_name: AuthServiceYaEShop
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_auth
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - postgres-db
+      - kafka
+    networks:
+      - yaeshop-network
+
+  postgres-db:
     image: postgres:14
     container_name: postgresYaEShop
+    env_file:
+      - .env
     ports:
-      - "5431:5432"
+      - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: yet_another_e_shop
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: ["postgres", "-c", "max_connections=500"]
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeperYaEShop
-    restart: always
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    volumes:
-      - zookeeper_data:/var/lib/zookeeper
+    networks:
+      - yaeshop-network
 
   kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafkaYaEShop
-    restart: always
-    ports:
-      - "9092:9092"
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.242.56.8:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
-    volumes:
-      - kafka_data:/var/lib/kafka/data
     depends_on:
       - zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - yaeshop-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - yaeshop-network
 
   minio:
     image: minio/minio:latest
@@ -75,23 +121,26 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
 
-  elasticsearch:
-    image: elasticsearch:8.17.2
-    container_name: elasticsearchYaEShop
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+#  elasticsearch:
+#    image: elasticsearch:8.17.2
+#    container_name: elasticsearchYaEShop
+#    environment:
+#      - discovery.type=single-node
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#      - xpack.security.enabled=false
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    volumes:
+#      - elasticsearch_data:/usr/share/elasticsearch/data
 
 volumes:
   postgres_data:
   mongodb_data:
   redis_data:
   elasticsearch_data:
-  kafka_data:
-  zookeeper_data:
+#  kafka_data:
+#  zookeeper_data:
+
+networks:
+  yaeshop-network:
