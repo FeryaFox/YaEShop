@@ -20,6 +20,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                        .requestMatchers(
+                                "/shop/swagger-ui/**",
+                                "/shop/v3/api-docs/**",
+                                "/shop/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/shop/{shopId}", "/shop/{shopId}/products").permitAll()
                         .requestMatchers("/shop/**").hasRole("SELLER")
