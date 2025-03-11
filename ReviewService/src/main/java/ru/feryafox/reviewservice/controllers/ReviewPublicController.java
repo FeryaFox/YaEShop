@@ -1,25 +1,29 @@
 package ru.feryafox.reviewservice.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.feryafox.models.internal.responses.UserProfileResponse;
+import org.springframework.web.bind.annotation.*;
 import ru.feryafox.reviewservice.models.responses.ReviewInfoResponse;
 import ru.feryafox.reviewservice.services.ReviewService;
 
 @RestController
 @RequestMapping("/review/")
 @RequiredArgsConstructor
+@Tag(name = "ReviewPublicController", description = "Публичные методы работы с отзывами")
 public class ReviewPublicController {
     private final ReviewService reviewService;
 
+    @Operation(summary = "Получить информацию об отзыве", description = "Возвращает данные конкретного отзыва по его ID.")
     @GetMapping("{reviewId}")
-    public ResponseEntity<?> getReview(@PathVariable("reviewId") String reviewId) {
+    public ResponseEntity<?> getReview(
+            @PathVariable("reviewId")
+            @Parameter(description = "Идентификатор отзыва", required = true)
+            String reviewId
+    ) {
         ReviewInfoResponse response = reviewService.getReviewInfo(reviewId);
-
         return ResponseEntity.ok(response);
     }
 }
