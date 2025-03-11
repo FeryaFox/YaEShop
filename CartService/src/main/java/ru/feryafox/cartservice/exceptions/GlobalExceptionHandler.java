@@ -1,5 +1,7 @@
 package ru.feryafox.cartservice.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,8 +12,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.feryafox.cartservice.exceptions.NoCartException;
-import ru.feryafox.cartservice.exceptions.ProductInTheCartIsNotExistException;
+import ru.feryafox.exceptions.ErrorResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,37 +25,62 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // Ошибка: корзина не найдена
     @ExceptionHandler(NoCartException.class)
-    public ResponseEntity<Map<String, String>> handleNoCartException(NoCartException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Корзина пользователя не найдена",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleNoCartException(NoCartException ex) {
         log.warn("Ошибка: {}", ex.getMessage());
         return buildResponse(HttpStatus.NOT_FOUND, "cart_not_found", ex.getMessage());
     }
 
-    // Ошибка: товар в корзине не найден
     @ExceptionHandler(ProductInTheCartIsNotExistException.class)
-    public ResponseEntity<Map<String, String>> handleProductNotInCartException(ProductInTheCartIsNotExistException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Товар в корзине не найден",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleProductNotInCartException(ProductInTheCartIsNotExistException ex) {
         log.warn("Ошибка: {}", ex.getMessage());
         return buildResponse(HttpStatus.NOT_FOUND, "product_not_in_cart", ex.getMessage());
     }
 
-    // Ошибки аутентификации
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Ошибка аутентификации",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
         log.warn("Ошибка аутентификации: {}", ex.getMessage());
         return buildResponse(HttpStatus.UNAUTHORIZED, "authentication_failed", "Неверные учетные данные");
     }
 
-    // Ошибки доступа
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("Ошибка доступа: {}", ex.getMessage());
         return buildResponse(HttpStatus.FORBIDDEN, "access_denied", "У вас нет прав для выполнения этой операции");
     }
 
-    // Ошибки валидации входных данных
+    @ExceptionHandler({JwtException.class, ExpiredJwtException.class})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Неверный или истекший токен",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
+        log.warn("Ошибка JWT-токена: {}", ex.getMessage());
+        return buildResponse(HttpStatus.UNAUTHORIZED, "invalid_token", "Некорректный или просроченный токен");
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации запроса",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         log.warn("Ошибка валидации запроса: {}", ex.getMessage());
 
         Map<String, String> errors = new HashMap<>();
@@ -58,35 +88,40 @@ public class GlobalExceptionHandler {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse("validation_error", errors.toString()), HttpStatus.BAD_REQUEST);
     }
 
-    // Ошибки ConstraintViolationException (например, валидация параметров запроса)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации данных",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         log.warn("Ошибка валидации: {}", ex.getMessage());
         return buildResponse(HttpStatus.BAD_REQUEST, "validation_error", ex.getMessage());
     }
 
-    // Некорректные запросы (например, неверный формат идентификатора товара)
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Некорректный запрос: {}", ex.getMessage());
         return buildResponse(HttpStatus.BAD_REQUEST, "bad_request", ex.getMessage());
     }
 
-    // Общие ошибки сервера
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
         log.error("Внутренняя ошибка сервера: {}", ex.getMessage(), ex);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "server_error", "Произошла ошибка на сервере");
     }
 
-    // Метод для формирования ответа
-    private ResponseEntity<Map<String, String>> buildResponse(HttpStatus status, String error, String message) {
-        Map<String, String> response = new HashMap<>();
-        response.put("error", error);
-        response.put("message", message);
-        return new ResponseEntity<>(response, status);
+    private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String error, String message) {
+        return new ResponseEntity<>(new ErrorResponse(error, message), status);
     }
 }
