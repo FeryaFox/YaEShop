@@ -20,6 +20,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                        .requestMatchers(
+                                "/order/swagger-ui/**",
+                                "/order/v3/api-docs/**",
+                                "/order/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/order/buyer/**").hasRole("BUYER")
                         .requestMatchers("/order/delivery/**").hasRole("DELIVERY")

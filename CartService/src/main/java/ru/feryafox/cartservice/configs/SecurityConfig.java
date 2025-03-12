@@ -20,6 +20,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                        .requestMatchers(
+                                "/cart/swagger-ui/**",
+                                "/cart/v3/api-docs/**",
+                                "/cart/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/cart/", "/cart/{productId}", "/cart/create_order").hasRole("BUYER")
                         .requestMatchers("/internal/cart/**").permitAll()

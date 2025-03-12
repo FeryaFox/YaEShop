@@ -20,6 +20,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                        .requestMatchers(
+                                "/payment/swagger-ui/**",
+                                "/payment/v3/api-docs/**",
+                                "/payment/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/payment/awaiting_payment").hasRole("BUYER")
                         .requestMatchers("/payment/pay/{paymentId}").permitAll()

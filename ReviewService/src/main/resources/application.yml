@@ -29,3 +29,11 @@ jwt:
 internal:
   api:
     key: ${INTERNAL_SECRET_KEY}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /review/v3/api-docs
+  swagger-ui:
+    enabled: false
+    path: /review/swagger-ui.html
