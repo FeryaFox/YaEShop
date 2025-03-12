@@ -9,9 +9,9 @@ import lombok.Data;
 @Schema(description = "Структура ответа при ошибке")
 public class ErrorResponse {
 
-    @Schema(description = "Код ошибки", example = "user_not_found")
+    @Schema(description = "Код ошибки", example = "some_error")
     private String error;
 
-    @Schema(description = "Описание ошибки", example = "Пользователь с указанным номером телефона не найден")
+    @Schema(description = "Описание ошибки", example = "Детальное описание ошибки")
     private String message;
 }
