@@ -1,9 +1,6 @@
 package ru.feryafox.kafka.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -18,4 +15,9 @@ public class PaymentResponseEvent implements BaseKafkaModel {
     private String paymentId;
     private String userId;
     private double totalPrice;
+
+    @Override
+    public String getType() {
+        return type;
+    }
 }

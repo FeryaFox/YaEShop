@@ -1,9 +1,6 @@
 package ru.feryafox.kafka.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +11,9 @@ public class ShopRatingEvent implements BaseKafkaModel {
 
     private String shopId;
     private double shopRating;
+
+    @Override
+    public String getType() {
+       return type;
+    }
 }
