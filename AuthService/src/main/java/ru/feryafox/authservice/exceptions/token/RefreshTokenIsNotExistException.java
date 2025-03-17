@@ -1,7 +1,9 @@
 package ru.feryafox.authservice.exceptions.token;
 
-public class RefreshTokenIsNotExistException extends RuntimeException {
-    public RefreshTokenIsNotExistException(String message) {
-        super(message);
+import ru.feryafox.authservice.exceptions.AuthServiceException;
+
+public class RefreshTokenIsNotExistException extends AuthServiceException {
+    public RefreshTokenIsNotExistException(String token) {
+        super("Рефреш токен не найден: " + token);
     }
 }

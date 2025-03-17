@@ -1,10 +1,7 @@
 package ru.feryafox.kafka.models;
 
 import com.fasterxml.jackson.databind.ser.Serializers;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,5 +24,10 @@ public class UserEvent implements BaseKafkaModel {
         CREATED,
         UPDATED,
         DELETED
+    }
+
+    @Override
+    public String getType() {
+        return type;
     }
 }

@@ -1,16 +1,13 @@
 package ru.feryafox.shopservice.services.minio;
 
-import io.minio.*;
-import io.minio.http.Method;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ru.feryafox.minio.BaseMinioService;
-import ru.feryafox.utils.HashUtils;
 
-import java.io.InputStream;
 
 @Service
+@Slf4j
 public class MinioService extends BaseMinioService {
     public MinioService(
             @Value("${minio.url}") String url,
@@ -18,5 +15,6 @@ public class MinioService extends BaseMinioService {
             @Value("${minio.secret-key}") String secretKey,
             @Value("${minio.bucket}") String bucketName) {
         super(url, accessKey, secretKey, bucketName);
+        log.info("MinioService инициализирован. URL: {}, Bucket: {}", url, bucketName);
     }
 }

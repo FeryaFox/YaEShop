@@ -35,16 +35,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        String ipAddress = request.getRemoteAddr();
+
+        log.info("Получен запрос от IP: {} с заголовком Authorization: {}", ipAddress, authHeader);
 
         try {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
 
+                log.info("Попытка аутентификации по JWT: {}", token);
+
                 if (jwtUtils.validateToken(token)) {
                     UUID userId = jwtUtils.getUserIdFromToken(token);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId.toString());
 
-                    log.info("Authenticated user: {} with roles: {}", userDetails.getUsername(),
+                    log.info("Аутентифицирован пользователь: {} с ролями: {}",
+                            userDetails.getUsername(),
                             userDetails.getAuthorities().stream().map(Object::toString).collect(Collectors.joining(", ")));
 
                     UsernamePasswordAuthenticationToken authentication =
@@ -52,22 +58,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+
+            log.info("Передача запроса в следующий фильтр. IP: {}", ipAddress);
             filterChain.doFilter(request, response);
+
         } catch (ExpiredJwtException e) {
-            log.warn("Expired token from IP: {}", request.getRemoteAddr());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"invalid_token\", \"message\": \"The token has expired. Please log in again.\"}");
+            log.warn("Истекший JWT-токен от IP: {}", ipAddress, e);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "invalid_token", "The token has expired. Please log in again.");
         } catch (JwtException e) {
-            log.warn("Invalid token from IP: {}", request.getRemoteAddr());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"invalid_token\", \"message\": \"Invalid token.\"}");
+            log.warn("Некорректный JWT-токен от IP: {}", ipAddress, e);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "invalid_token", "Invalid token.");
         } catch (IllegalArgumentException e) {
-            log.warn("Invalid UUID format in token from IP: {}", request.getRemoteAddr());
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"invalid_uuid\", \"message\": \"Invalid UUID format.\"}");
+            log.warn("Ошибка UUID в токене от IP: {}", ipAddress, e);
+            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "invalid_uuid", "Invalid UUID format.");
+        } catch (Exception e) {
+            log.error("Ошибка обработки JWT-фильтра для IP: {}", ipAddress, e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "server_error", "Internal server error.");
         }
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status, String error, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.getWriter().write(String.format("{\"error\": \"%s\", \"message\": \"%s\"}", error, message));
     }
 }

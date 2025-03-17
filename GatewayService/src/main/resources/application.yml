@@ -1,5 +1,6 @@
 server:
   port: 8080
+  max-http-request-header-size: 32KB
 
 spring:
   application:
@@ -103,3 +104,35 @@ logging:
 internal:
   api:
     key: ${INTERNAL_SECRET_KEY}
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - name: gateway-service
+        url: /v3/api-docs
+
+      - name: auth-service
+        url: /auth/v3/api-docs
+
+      - name: cart-service
+        url: /cart/v3/api-docs
+
+      - name: order-service
+        url: /order/v3/api-docs
+
+      - name: payment-service
+        url: /payment/v3/api-docs
+
+      - name: product-service
+        url: /product/v3/api-docs
+
+      - name: review-service
+        url: /review/v3/api-docs
+
+      - name: shop-service
+        url: /shop/v3/api-docs

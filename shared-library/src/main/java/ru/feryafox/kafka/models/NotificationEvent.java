@@ -1,9 +1,6 @@
 package ru.feryafox.kafka.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +11,9 @@ public class NotificationEvent implements BaseKafkaModel{
 
     private String userId;
     private String message;
+
+    @Override
+    public String getType() {
+        return type;
+    }
 }

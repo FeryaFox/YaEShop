@@ -1,9 +1,6 @@
 package ru.feryafox.kafka.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -19,6 +16,11 @@ public class OrderEvent implements BaseKafkaModel{
     private Set<ProductItem> productItems;
     private OrderStatus orderStatus;
     private double totalPrice;
+
+    @Override
+    public String getType() {
+        return type;
+    }
 
     @Data
     @AllArgsConstructor

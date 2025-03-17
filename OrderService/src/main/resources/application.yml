@@ -36,6 +36,10 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
 
-internal:
-  api:
-    key: ${INTERNAL_SECRET_KEY}
+springdoc:
+  api-docs:
+    enabled: true
+    path: /order/v3/api-docs
+  swagger-ui:
+    enabled: false
+    path: /order/swagger-ui.html

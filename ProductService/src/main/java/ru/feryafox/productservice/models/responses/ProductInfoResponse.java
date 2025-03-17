@@ -1,5 +1,6 @@
 package ru.feryafox.productservice.models.responses;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,40 +17,32 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "Информация о продукте")
 public class ProductInfoResponse {
+
+    @Schema(description = "Идентификатор продукта", example = "60d5f6f7e3a3c9001c8e4bdf")
     private String id;
+
+    @Schema(description = "Название продукта", example = "Смартфон Apple iPhone 13")
     private String name;
+
+    @Schema(description = "Описание продукта", example = "Мощный смартфон с камерой 12 МП и процессором A15 Bionic")
     private String description;
+
+    @Schema(description = "Идентификатор магазина, к которому относится продукт", example = "60d5f6f7e3a3c9001c8e4bdc")
     private String shopId;
+
+    @Schema(description = "Список изображений продукта")
     private Set<ImageResponse> images;
+
+    @Schema(description = "Дополнительные характеристики продукта", example = "{\"Цвет\":\"Синий\", \"Объем памяти\":\"128GB\"}")
     private Map<String, String> attributes;
+
+    @Schema(description = "Цена продукта", example = "89999.99")
     private double price;
+
+    @Schema(description = "Рейтинг продукта", example = "4.7")
     private double rating;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ImageResponse {
-       private String url;
-       private int position;
-
-       public static ImageResponse fromImage(Image image) {
-           ImageResponse imageResponse = new ImageResponse();
-           imageResponse.setUrl(image.getImageUrl());
-           imageResponse.setPosition(image.getPosition());
-
-           return imageResponse;
-       }
-
-       public static ProductInfoInternResponse.ImageInternResponse toIntern(ImageResponse imageResponse) {
-           var builder = ProductInfoInternResponse.ImageInternResponse.builder();
-
-           builder.url(imageResponse.getUrl())
-                   .position(imageResponse.getPosition());
-
-           return builder.build();
-       }
-    }
 
     public static ProductInfoResponse from(Product product) {
         ProductInfoResponse productInfoResponse = new ProductInfoResponse();
