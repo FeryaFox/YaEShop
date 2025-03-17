@@ -3,7 +3,6 @@ package ru.feryafox.authservice.controllers.profile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +26,9 @@ public class SellerProfileController {
                     content = @Content(schema = @Schema(implementation = SellerProfileResponse.class))),
             @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content)
     })
-    @GetMapping("")
-    public ResponseEntity<?> getSellerProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body(sellerProfileService.getSellerProfile(userDetails.getUsername()));
+    @GetMapping("/")
+    public ResponseEntity<SellerProfileResponse> getSellerProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(sellerProfileService.getSellerProfile(userDetails.getUsername()));
     }
 
     @Operation(summary = "Обновление профиля продавца", responses = {
@@ -37,10 +36,10 @@ public class SellerProfileController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса", content = @Content),
             @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content)
     })
-    @PostMapping("")
-    public ResponseEntity<?> createSellerProfile(
+    @PutMapping("/")
+    public ResponseEntity<Void> updateSellerProfile(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody(description = "Обновленные данные профиля", required = true) UpdateSellerProfile updateSellerProfile
+            @RequestBody UpdateSellerProfile updateSellerProfile
     ) {
         sellerProfileService.updateSellerProfile(userDetails.getUsername(), updateSellerProfile);
         return ResponseEntity.noContent().build();

@@ -18,42 +18,36 @@ import ru.feryafox.shopservice.services.ShopService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/shop/")
+@RequestMapping("/shop")
 @RequiredArgsConstructor
 @Tag(name = "ShopController", description = "Управление магазинами (создание, обновление, загрузка изображений)")
 public class ShopController {
     private final ShopService shopService;
 
     @Operation(summary = "Создать магазин", description = "Позволяет продавцу создать новый магазин")
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<CreateShopResponse> createShop(
             @RequestBody CreateShopRequest createShopRequest,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        CreateShopResponse response = shopService.createShop(createShopRequest, userDetails.getUsername());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(shopService.createShop(createShopRequest, userDetails.getUsername()));
     }
 
     @Operation(summary = "Загрузить изображение для магазина", description = "Позволяет загрузить изображение магазина")
-    @PostMapping(value = "{shopId}/upload_image", consumes = "multipart/form-data")
+    @PostMapping(value = "/{shopId}/upload_image", consumes = "multipart/form-data")
     public ResponseEntity<UploadImageResponse> uploadImage(
-            @PathVariable("shopId")
-            @Parameter(description = "Идентификатор магазина", required = true)
-            String shopId,
+            @PathVariable @Parameter(description = "Идентификатор магазина", required = true) UUID shopId,
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal UserDetails userDetails
     ) throws Exception {
-        UploadImageResponse response = shopService.uploadImage(file, UUID.fromString(shopId), userDetails.getUsername());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(shopService.uploadImage(file, shopId, userDetails.getUsername()));
     }
 
     @Operation(summary = "Обновить информацию о магазине", description = "Позволяет обновить название и описание магазина")
-    @PutMapping("{shopId}")
+    @PutMapping("/{shopId}")
     public ResponseEntity<Void> updateShop(
             @RequestBody UpdateShopRequest updateShopRequest,
-            @PathVariable("shopId")
-            @Parameter(description = "Идентификатор магазина", required = true)
-            UUID shopId,
+            @PathVariable @Parameter(description = "Идентификатор магазина", required = true) UUID shopId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         shopService.updateShop(updateShopRequest, shopId, userDetails.getUsername());

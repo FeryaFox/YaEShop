@@ -2,7 +2,6 @@ package ru.feryafox.orderservice.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import ru.feryafox.orderservice.models.requests.ChangeStatusRequest;
 import ru.feryafox.orderservice.services.OrderService;
 
 @RestController
-@RequestMapping("/order/delivery/")
+@RequestMapping("/order/delivery")
 @RequiredArgsConstructor
 @Tag(name = "Order Delivery", description = "API для управления статусами заказов на доставку")
 public class OrderDeliveryController {
@@ -25,9 +24,9 @@ public class OrderDeliveryController {
             @ApiResponse(responseCode = "403", description = "У пользователя нет прав для изменения статуса", content = @Content),
             @ApiResponse(responseCode = "404", description = "Заказ не найден", content = @Content)
     })
-    @PatchMapping("{orderId}/status")
-    public ResponseEntity<?> updateOrderStatus(
-            @PathVariable("orderId") String orderId,
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<Void> updateOrderStatus(
+            @PathVariable String orderId,
             @RequestBody ChangeStatusRequest changeStatusRequest
     ) {
         orderService.changeOrderStatus(orderId, changeStatusRequest);

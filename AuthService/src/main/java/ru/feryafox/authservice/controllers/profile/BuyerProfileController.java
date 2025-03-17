@@ -3,7 +3,6 @@ package ru.feryafox.authservice.controllers.profile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +26,9 @@ public class BuyerProfileController {
                     content = @Content(schema = @Schema(implementation = BuyerProfileResponse.class))),
             @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content)
     })
-    @GetMapping("")
-    public ResponseEntity<?> getBuyerProfile(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok().body(buyerProfileService.getBuyerProfileService(userDetails.getUsername()));
+    @GetMapping("/")
+    public ResponseEntity<BuyerProfileResponse> getBuyerProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(buyerProfileService.getBuyerProfileService(userDetails.getUsername()));
     }
 
     @Operation(summary = "Обновление профиля покупателя", responses = {
@@ -37,10 +36,10 @@ public class BuyerProfileController {
             @ApiResponse(responseCode = "400", description = "Некорректные данные запроса", content = @Content),
             @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован", content = @Content)
     })
-    @PostMapping("")
-    public ResponseEntity<?> createBuyerProfile(
+    @PutMapping("/")
+    public ResponseEntity<Void> updateBuyerProfile(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody(description = "Обновленные данные профиля", required = true) UpdateBuyerProfile updateBuyerProfile
+            @RequestBody UpdateBuyerProfile updateBuyerProfile
     ) {
         buyerProfileService.updateBuyerProfile(userDetails.getUsername(), updateBuyerProfile);
         return ResponseEntity.noContent().build();
