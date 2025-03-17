@@ -1,13 +1,11 @@
 package ru.feryafox.kafka.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ReviewEvent implements BaseKafkaModel{
     private final String type = "ReviewEvent";
 
