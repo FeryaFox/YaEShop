@@ -109,6 +109,7 @@ public class OrderService {
             log.info("Статус заказа {} успешно обновлен на {}", orderId, newStatus);
         } catch (IncorrectStatusChangeException e) {
             log.error("Ошибка при изменении статуса заказа {}: {}", orderId, e.getMessage());
+            throw e;
         }
     }
 

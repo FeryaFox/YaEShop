@@ -1,12 +1,11 @@
 package ru.feryafox.kafka.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ReviewEvent implements BaseKafkaModel{
     private final String type = "ReviewEvent";
 
@@ -24,5 +23,10 @@ public class ReviewEvent implements BaseKafkaModel{
        CREATED,
        UPDATED,
        DELETED
+    }
+
+    @Override
+    public String getType() {
+        return type;
     }
 }

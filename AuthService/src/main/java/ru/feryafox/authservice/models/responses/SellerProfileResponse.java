@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.feryafox.authservice.entities.Seller;
 import ru.feryafox.authservice.entities.User;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Schema(description = "Ответ с профилем продавца")
 public class SellerProfileResponse {

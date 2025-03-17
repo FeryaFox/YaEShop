@@ -2,6 +2,7 @@ package ru.feryafox.kafka.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -21,5 +22,10 @@ public class ProductEvent implements BaseKafkaModel{
         CREATED,
         UPDATED,
         DELETED
+    }
+
+    @Override
+    public String getType() {
+        return type;
     }
 }
