@@ -14,14 +14,14 @@ import ru.feryafox.reviewservice.models.requests.UpdateReviewRequest;
 import ru.feryafox.reviewservice.services.ReviewService;
 
 @RestController
-@RequestMapping("/review/")
+@RequestMapping("/review")
 @RequiredArgsConstructor
 @Tag(name = "ReviewController", description = "Управление отзывами пользователей")
 public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(summary = "Создать отзыв", description = "Позволяет пользователю оставить отзыв на продукт.")
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<?> createReview(
             @RequestBody @Valid CreateReviewRequest createReviewRequest,
             @AuthenticationPrincipal UserDetails userDetails
@@ -33,9 +33,7 @@ public class ReviewController {
     @Operation(summary = "Обновить отзыв", description = "Позволяет пользователю обновить ранее оставленный отзыв.")
     @PutMapping("/{reviewId}")
     public ResponseEntity<?> updateReview(
-            @PathVariable(value = "reviewId")
-            @Parameter(description = "Идентификатор отзыва", required = true)
-            String reviewId,
+            @PathVariable @Parameter(description = "Идентификатор отзыва", required = true) String reviewId,
             @RequestBody @Valid UpdateReviewRequest updateRequest,
             @AuthenticationPrincipal UserDetails userDetails
     ) {

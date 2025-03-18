@@ -1,46 +1,256 @@
 version: '3.8'
 services:
 
-  postgres:
+  eureka-service:
+    build:
+      context: .
+      dockerfile: EurekaService/Dockerfile
+    container_name: EurekaServiceYaEShop
+    ports:
+    - "8761:8761"
+    networks:
+      - yaeshop-network
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: GatewayService/Dockerfile
+    container_name: GatewayServiceYaEShop
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-service
+    networks:
+      - yaeshop-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    container_name: AuthServiceYaEShop
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_auth
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - postgres-db
+      - kafka
+    networks:
+      - yaeshop-network
+
+  cart-service:
+    build:
+      context: .
+      dockerfile: CartService/Dockerfile
+    container_name: CartServiceYaEShop
+    environment:
+      - MONGO_HOST=mongodb:27017
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=yet_another_e_shop_cart
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8086:8086"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - mongodb
+      - kafka
+    networks:
+      - yaeshop-network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+    container_name: NotificationServiceYaEShop
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_notification
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8088:8088"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - postgres-db
+      - kafka
+    networks:
+      - yaeshop-network
+
+  order-service:
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    container_name: OrderServiceYaEShop
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_order
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8087:8087"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - postgres-db
+      - kafka
+    networks:
+      - yaeshop-network
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: PaymentService/Dockerfile
+    container_name: PaymentServiceYaEShop
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_payment
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8089:8089"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - postgres-db
+      - kafka
+    networks:
+      - yaeshop-network
+
+  product-service:
+    build:
+      context: .
+      dockerfile: ProductService/Dockerfile
+    container_name: ProductServiceYaEShop
+    environment:
+      - MONGO_HOST=mongodb:27017
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=yet_another_e_shop_product
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - MINIO_HOST=minio:9000
+      - MINIO_NAME=${MINIO_NAME}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - mongodb
+      - kafka
+      - minio
+    networks:
+      - yaeshop-network
+
+  review-service:
+    build:
+      context: .
+      dockerfile: ReviewService/Dockerfile
+    container_name: ReviewServiceYaEShop
+    environment:
+      - MONGO_HOST=mongodb:27017
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=yet_another_e_shop_review
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+    env_file:
+      - .env
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - mongodb
+      - kafka
+    networks:
+      - yaeshop-network
+
+  shop-service:
+    build:
+      context: .
+      dockerfile: ShopService/Dockerfile
+    container_name: ShopServiceYaEShop
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_shop
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_KAFKA_BOOTSTRAP_SERVER=kafka:9092
+      - MINIO_HOST=minio:9000
+      - MINIO_NAME=${MINIO_NAME}
+      - MINIO_PASSWORD=${MINIO_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-service
+      - gateway-service
+      - mongodb
+      - kafka
+      - minio
+    networks:
+      - yaeshop-network
+  postgres-db:
     image: postgres:14
     container_name: postgresYaEShop
+    env_file:
+      - .env
     ports:
-      - "5431:5432"
+      - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: yet_another_e_shop
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: ["postgres", "-c", "max_connections=500"]
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeperYaEShop
-    restart: always
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    volumes:
-      - zookeeper_data:/var/lib/zookeeper
+    networks:
+      - yaeshop-network
 
   kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafkaYaEShop
-    restart: always
-    ports:
-      - "9092:9092"
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.242.56.8:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
-    volumes:
-      - kafka_data:/var/lib/kafka/data
     depends_on:
       - zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - yaeshop-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - yaeshop-network
 
   minio:
     image: minio/minio:latest
@@ -49,8 +259,8 @@ services:
       - "9000:9000"
       - "9090:9090"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MONGO_USERNAME}
+      MINIO_ROOT_PASSWORD: ${MONGO_PASSWORD}
     command: server /data --console-address ":9090"
 
   mongodb:
@@ -62,8 +272,8 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
 
   redis:
     image: redis:latest
@@ -75,23 +285,26 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
 
-  elasticsearch:
-    image: elasticsearch:8.17.2
-    container_name: elasticsearchYaEShop
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - xpack.security.enabled=false
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+#  elasticsearch:
+#    image: elasticsearch:8.17.2
+#    container_name: elasticsearchYaEShop
+#    environment:
+#      - discovery.type=single-node
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#      - xpack.security.enabled=false
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    volumes:
+#      - elasticsearch_data:/usr/share/elasticsearch/data
 
 volumes:
   postgres_data:
   mongodb_data:
   redis_data:
   elasticsearch_data:
-  kafka_data:
-  zookeeper_data:
+#  kafka_data:
+#  zookeeper_data:
+
+networks:
+  yaeshop-network:

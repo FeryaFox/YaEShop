@@ -3,7 +3,6 @@ package ru.feryafox.authservice.controllers.auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +28,9 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "Пользователь с таким номером уже существует", content = @Content)
     })
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody(description = "Данные для регистрации", required = true) RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(
+            @RequestBody RegisterRequest registerRequest) {
+        System.out.println(registerRequest);
         authService.register(registerRequest);
         return ResponseEntity.noContent().build();
     }
@@ -39,8 +40,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Неверные учетные данные", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody(description = "Данные для входа", required = true) LoginRequest loginRequest,
-                                   HttpServletRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         AuthResponse authResponse = authService.login(loginRequest, request);
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", authResponse.getRefreshToken())
@@ -58,7 +58,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Рефреш-токен отсутствует или недействителен", content = @Content)
     })
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody(description = "Рефреш-токен", required = false) RefreshTokenRequest refreshTokenRequest,
+    public ResponseEntity<?> refreshToken(@RequestBody(required = false) RefreshTokenRequest refreshTokenRequest,
                                           @CookieValue(name = "refresh_token", required = false) String refreshTokenFromCookie) {
         String refreshToken = (refreshTokenRequest != null && refreshTokenRequest.getRefreshToken() != null)
                 ? refreshTokenRequest.getRefreshToken()
@@ -90,7 +90,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Успешный выход из системы", content = @Content)
     })
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody(description = "Рефреш-токен", required = false) RefreshTokenRequest refreshTokenRequest,
+    public ResponseEntity<?> logout(@RequestBody(required = false) RefreshTokenRequest refreshTokenRequest,
                                     @CookieValue(name = "refresh_token", required = false) String refreshTokenFromCookie) {
         String refreshToken = (refreshTokenRequest != null && refreshTokenRequest.getRefreshToken() != null)
                 ? refreshTokenRequest.getRefreshToken()

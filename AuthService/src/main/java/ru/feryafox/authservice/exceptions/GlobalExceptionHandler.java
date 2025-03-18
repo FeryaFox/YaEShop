@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
             @ApiResponse(responseCode = "400", description = "Некорректный запрос", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.warn("Некорректный запрос: {}", ex.getMessage());
+        log.warn("Некорректный запрос: {}, {}", ex.getMessage(), ex.getStackTrace());
         return buildResponse(HttpStatus.BAD_REQUEST, "bad_request", ex.getMessage());
     }
 
