@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:example@10.242.56.8:27017/yet_another_e_shop_cart?authSource=admin
+
+  kafka:
+    bootstrap-servers: 10.242.56.8:9092
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
