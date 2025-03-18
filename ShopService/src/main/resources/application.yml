@@ -5,11 +5,10 @@ spring:
   application:
     name: shop-service
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
 
   datasource:
-    url: jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_shop
-    username: postgres
-    password: 123
     driver-class-name: org.postgresql.Driver
 
   flyway:
@@ -30,20 +29,12 @@ spring:
         spring.json.trusted.packages: "*"
         event.class.ShopRatingEvent: ru.feryafox.kafka.models.ShopRatingEvent
       group-id: shop-service-group
-    bootstrap-servers: "10.242.56.8:9092"
 
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
-
-minio:
-  url: http://10.242.56.8:9000
-  access-key: minioadmin
-  secret-key: minioadmin
-  bucket: shop-images
-  endpoint: http://10.242.56.8:9000
 
 jwt:
   secret: ${JWT_SECRET}

@@ -10,5 +10,8 @@ RUN mvn clean install -pl CartService -am -DskipTests
 # -- Финальный образ --
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=builder /build/AuthService/target/*.jar app.jar
+COPY --from=builder /build/CartService/target/*.jar app.jar
+
+ENV SPRING_PROFILES_ACTIVE=docker
+
 CMD ["java", "-jar", "app.jar"]

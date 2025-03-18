@@ -3,11 +3,12 @@ WORKDIR /build
 
 COPY . .
 
-RUN mvn clean install -pl AuthService -am -DskipTests
+RUN mvn clean install -pl PaymentService -am -DskipTests
+
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder /build/AuthService/target/*.jar app.jar
+COPY --from=builder /build/PaymentService/target/*.jar app.jar
 
 ENV SPRING_PROFILES_ACTIVE=docker
 

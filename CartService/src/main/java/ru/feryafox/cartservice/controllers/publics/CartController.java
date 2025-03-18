@@ -38,7 +38,7 @@ public class CartController {
     })
     @PatchMapping("/{productId}")
     public ResponseEntity<Void> updateProduct(
-            @PathVariable String productId,
+            @PathVariable(name = "productId") String productId,
             @RequestBody PatchCartRequest patchCartRequest,
             @AuthenticationPrincipal UserDetails userDetails) {
         cartService.patchCart(productId, userDetails.getUsername(), patchCartRequest);
@@ -51,7 +51,7 @@ public class CartController {
     })
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(
-            @PathVariable String productId,
+            @PathVariable(name = "productId") String productId,
             @AuthenticationPrincipal UserDetails userDetails) {
         cartService.deleteProductFromCart(productId, userDetails.getUsername());
         return ResponseEntity.noContent().build();

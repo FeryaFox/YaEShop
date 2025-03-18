@@ -15,4 +15,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=builder /app/GatewayService/target/*.jar app.jar
+
+ENV SPRING_PROFILES_ACTIVE=docker
+
 CMD ["java", "-jar", "app.jar"]

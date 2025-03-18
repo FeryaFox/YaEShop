@@ -23,12 +23,6 @@ spring:
   jpa:
     show-sql: true
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://eureka-service:8761/eureka/
-
-
 jwt:
   secret: ${JWT_SECRET}
   jwt-expiration-ms: 3600000

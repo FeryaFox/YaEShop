@@ -5,10 +5,10 @@ spring:
   application:
     name: notification-service
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
   datasource:
-    url: jdbc:postgresql://10.242.56.8:5431/yet_another_e_shop_notification
-    username: postgres
-    password: 123
     driver-class-name: org.postgresql.Driver
 
   flyway:
@@ -27,8 +27,6 @@ spring:
         event.class.UserEvent: ru.feryafox.kafka.models.UserEvent
         event.class.NotificationEvent: ru.feryafox.kafka.models.NotificationEvent
       group-id: notification-service-group
-
-    bootstrap-servers: "10.242.56.8:9092"
 
 jwt:
   secret: ${JWT_SECRET}
