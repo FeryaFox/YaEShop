@@ -150,6 +150,9 @@ services:
       - MINIO_HOST=minio:9000
       - MINIO_NAME=${MINIO_NAME}
       - MINIO_PASSWORD=${MINIO_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/yet_another_e_shop_product
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
     env_file:
       - .env
     ports:
@@ -160,6 +163,7 @@ services:
       - mongodb
       - kafka
       - minio
+      - postgres-db
     networks:
       - yaeshop-network
 
